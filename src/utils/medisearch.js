@@ -163,6 +163,11 @@ async function sendMedicalQuery(question) {
                             case 'articles':
                                 articles = data.data || [];
                                 console.log('Referenced articles:', articles);
+                                try {
+                                    sendToRenderer('update-sources', articles);
+                                } catch (rendererError) {
+                                    console.warn('Failed to send articles to renderer:', rendererError.message);
+                                }
                                 break;
                                 
                             case 'followups':

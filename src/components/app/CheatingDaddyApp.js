@@ -124,6 +124,7 @@ export class CheatingDaddyApp extends LitElement {
         _isClickThrough: { state: true },
         _awaitingNewResponse: { state: true },
         shouldAnimateResponse: { type: Boolean },
+        sources: { type: Array },
     };
 
     constructor() {
@@ -146,6 +147,7 @@ export class CheatingDaddyApp extends LitElement {
         this._awaitingNewResponse = false;
         this._currentResponseIsComplete = true;
         this.shouldAnimateResponse = false;
+        this.sources = [];
 
         // Apply layout mode to document root
         this.updateLayoutMode();

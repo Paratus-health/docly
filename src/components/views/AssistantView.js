@@ -8,6 +8,90 @@ export class AssistantView extends LitElement {
             flex-direction: column;
         }
 
+        .main-content {
+            display: flex;
+            height: calc(100% - 60px);
+            gap: 16px;
+        }
+
+        .response-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sources-panel {
+            width: 300px;
+            background: var(--main-content-background);
+            backdrop-filter: var(--main-content-backdrop-filter);
+            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            overflow-y: auto;
+            display: none; /* Hidden by default, shown when sources are available */
+        }
+
+        .sources-panel.has-sources {
+            display: block;
+        }
+
+        .sources-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .source-item {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .source-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .source-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-color);
+            line-height: 1.4;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .source-meta {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .source-journal {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .source-year {
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
 
         * {
             font-family: 'Inter', sans-serif;
@@ -15,7 +99,7 @@ export class AssistantView extends LitElement {
         }
 
         .response-container {
-            height: calc(100% - 60px);
+            height: 100%;
             overflow-y: auto;
             border-radius: 10px;
             font-size: var(--response-font-size, 16px);
@@ -367,6 +451,7 @@ export class AssistantView extends LitElement {
         onSendText: { type: Function },
         shouldAnimateResponse: { type: Boolean },
         savedResponses: { type: Array },
+        sources: { type: Array },
     };
 
     constructor() {
@@ -377,6 +462,7 @@ export class AssistantView extends LitElement {
         this.onSendText = () => {};
         this._lastAnimatedWordCount = 0;
         this._updatePending = false;
+        this.sources = [];
         // Load saved responses from localStorage
         try {
             this.savedResponses = JSON.parse(localStorage.getItem('savedResponses') || '[]');
@@ -652,13 +738,40 @@ export class AssistantView extends LitElement {
         }
     }
 
+    openSource(url) {
+        if (url && typeof window !== 'undefined' && window.require) {
+            const { ipcRenderer } = window.require('electron');
+            ipcRenderer.invoke('open-external', url);
+        }
+    }
+
     render() {
         const currentResponse = this.getCurrentResponse();
         const responseCounter = this.getResponseCounter();
         const isSaved = this.isResponseSaved();
 
         return html`
-            <div class="response-container" id="responseContainer"></div>
+            <div class="main-content">
+                <div class="response-section">
+                    <div class="response-container" id="responseContainer"></div>
+                </div>
+                
+                <div class="sources-panel ${this.sources && this.sources.length > 0 ? 'has-sources' : ''}">
+                    <div class="sources-title">Sources</div>
+                    ${this.sources && this.sources.length > 0 
+                        ? this.sources.map(source => html`
+                            <div class="source-item" @click=${() => this.openSource(source.url)}>
+                                <div class="source-title">${source.title}</div>
+                                <div class="source-meta">
+                                    <div class="source-journal">${source.journal || 'Research Article'}</div>
+                                    <div class="source-year">${source.year || 'N/A'}</div>
+                                </div>
+                            </div>
+                        `)
+                        : html`<div style="color: rgba(255,255,255,0.5); font-size: 14px;">No sources available</div>`
+                    }
+                </div>
+            </div>
 
             <div class="text-input-container">
                 <button class="nav-button" @click=${this.navigateToPreviousResponse} ?disabled=${this.currentResponseIndex <= 0}>
