@@ -8,88 +8,170 @@ export class AssistantView extends LitElement {
             flex-direction: column;
         }
 
-        .main-content {
+        .content-wrapper {
             display: flex;
-            height: calc(100% - 60px);
-            gap: 16px;
+            flex-direction: column;
+            height: 100%;
+            gap: 12px;
         }
 
         .response-section {
             flex: 1;
-            min-width: 0;
+            min-height: 0;
         }
 
-        .sources-panel {
-            width: 300px;
+        .sources-carousel {
+            height: 140px;
             background: var(--main-content-background);
             backdrop-filter: var(--main-content-backdrop-filter);
             -webkit-backdrop-filter: var(--main-content-backdrop-filter);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 16px;
-            overflow-y: auto;
-            display: none; /* Hidden by default, shown when sources are available */
+            display: none;
+            flex-direction: column;
         }
 
-        .sources-panel.has-sources {
-            display: block;
+        .sources-carousel.has-sources {
+            display: flex;
+        }
+
+        .sources-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
 
         .sources-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-color);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .source-item {
-            margin-bottom: 12px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .source-item:hover {
+        .sources-count {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
         }
 
-        .source-title {
+        .carousel-container {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scroll-behavior: smooth;
+        }
+
+        .carousel-track::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .carousel-track::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+        }
+
+        .carousel-track::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .carousel-track::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .source-card {
+            min-width: 280px;
+            max-width: 280px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .source-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #007AFF, #5856D6);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .source-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .source-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .source-card-title {
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-color);
-            line-height: 1.4;
+            line-height: 1.3;
             margin-bottom: 6px;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .source-meta {
+        .source-card-meta {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 4px;
         }
 
-        .source-journal {
+        .source-card-journal {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             flex: 1;
+            margin-right: 8px;
         }
 
-        .source-year {
-            margin-left: 8px;
-            font-weight: 500;
+        .source-card-year {
+            font-weight: 600;
+            color: #007AFF;
+            font-size: 12px;
+        }
+
+        .source-card-authors {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
 
@@ -339,35 +421,93 @@ export class AssistantView extends LitElement {
 
         .text-input-container {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 16px;
+            align-items: stretch;
+            background: var(--main-content-background);
+            backdrop-filter: var(--main-content-backdrop-filter);
+            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .text-input-container:focus-within {
+            border-color: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
             align-items: center;
+            gap: 12px;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper:focus-within {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .text-input-container input {
             flex: 1;
-            background: var(--input-background);
-            color: var(--input-text-color);
-            text-shadow: var(--text-shadow);
-            border: 1px solid var(--button-border);
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            backdrop-filter: var(--input-backdrop-filter);
-            -webkit-backdrop-filter: var(--input-backdrop-filter);
-            transition: all 0.2s ease;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.4;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         }
 
         .text-input-container input:focus {
             outline: none;
-            border-color: var(--focus-border-color);
-            box-shadow: var(--focus-box-shadow);
-            background: var(--input-focus-background);
         }
 
         .text-input-container input::placeholder {
-            color: var(--placeholder-color);
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .send-button:hover {
+            background: linear-gradient(135deg, #0056CC, #4940B8);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .send-button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .text-input-container button {
@@ -751,25 +891,38 @@ export class AssistantView extends LitElement {
         const isSaved = this.isResponseSaved();
 
         return html`
-            <div class="main-content">
+            <div class="content-wrapper">
                 <div class="response-section">
                     <div class="response-container" id="responseContainer"></div>
                 </div>
                 
-                <div class="sources-panel ${this.sources && this.sources.length > 0 ? 'has-sources' : ''}">
-                    <div class="sources-title">Sources</div>
-                    ${this.sources && this.sources.length > 0 
-                        ? this.sources.map(source => html`
-                            <div class="source-item" @click=${() => this.openSource(source.url)}>
-                                <div class="source-title">${source.title}</div>
-                                <div class="source-meta">
-                                    <div class="source-journal">${source.journal || 'Research Article'}</div>
-                                    <div class="source-year">${source.year || 'N/A'}</div>
-                                </div>
-                            </div>
-                        `)
-                        : html`<div style="color: rgba(255,255,255,0.5); font-size: 14px;">No sources available</div>`
-                    }
+                <div class="sources-carousel ${this.sources && this.sources.length > 0 ? 'has-sources' : ''}">
+                    <div class="sources-header">
+                        <div class="sources-title">
+                            📚 Sources
+                            <div class="sources-count">${this.sources ? this.sources.length : 0}</div>
+                        </div>
+                    </div>
+                    <div class="carousel-container">
+                        <div class="carousel-track">
+                            ${this.sources && this.sources.length > 0 
+                                ? this.sources.map(source => html`
+                                    <div class="source-card" @click=${() => this.openSource(source.url)}>
+                                        <div class="source-card-title">${source.title}</div>
+                                        <div class="source-card-meta">
+                                            <div class="source-card-journal">${source.journal || 'Research Article'}</div>
+                                            <div class="source-card-year">${source.year || 'N/A'}</div>
+                                        </div>
+                                        ${source.authors && source.authors.length > 0 
+                                            ? html`<div class="source-card-authors">${Array.isArray(source.authors) ? source.authors.slice(0, 3).join(', ') : source.authors}</div>`
+                                            : ''
+                                        }
+                                    </div>
+                                `)
+                                : html`<div style="color: rgba(255,255,255,0.5); font-size: 14px; text-align: center; padding: 20px;">No sources available for this response</div>`
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
 
