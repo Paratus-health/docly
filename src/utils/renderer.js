@@ -149,16 +149,22 @@ function arrayBufferToBase64(buffer) {
     return btoa(binary);
 }
 
-async function initializeGemini(profile = 'interview', language = 'en-US') {
+async function initializeMediSearch(profile = 'medical', language = 'en-US') {
     const apiKey = localStorage.getItem('apiKey')?.trim();
     if (apiKey) {
-        const success = await ipcRenderer.invoke('initialize-gemini', apiKey, localStorage.getItem('customPrompt') || '', profile, language);
+        const success = await ipcRenderer.invoke('initialize-medisearch', apiKey, profile, language);
         if (success) {
-            cheddar.setStatus('Live');
+            cheddar.setStatus('Ready');
         } else {
-            cheddar.setStatus('error');
+            cheddar.setStatus('Error');
         }
     }
+}
+
+// Legacy function for compatibility
+async function initializeGemini(profile = 'medical', language = 'en-US') {
+    console.log('Redirecting to MediSearch...');
+    return await initializeMediSearch(profile, language);
 }
 
 // Listen for status updates
@@ -338,8 +344,13 @@ async function startCapture(screenshotIntervalSeconds = 5, imageQuality = 'mediu
             videoTrack: mediaStream.getVideoTracks()[0]?.getSettings(),
         });
 
-        // Start capturing screenshots - check if manual mode
-        if (screenshotIntervalSeconds === 'manual' || screenshotIntervalSeconds === 'Manual') {
+        // Start capturing screenshots - check if manual mode or MediSearch
+        const usingMediSearch = true; // MediSearch doesn't support images
+        
+        if (usingMediSearch) {
+            console.log('MediSearch mode - image capture disabled as it is not supported');
+            // Don't start image capture for MediSearch
+        } else if (screenshotIntervalSeconds === 'manual' || screenshotIntervalSeconds === 'Manual') {
             console.log('Manual mode enabled - screenshots will be captured on demand only');
             // Don't start automatic capture in manual mode
         } else {
@@ -609,24 +620,26 @@ function stopCapture() {
 }
 
 // Send text message to Gemini
-async function sendTextMessage(text) {
+async function sendMedicalQuery(text) {
     if (!text || text.trim().length === 0) {
-        console.warn('Cannot send empty text message');
+        console.warn('Cannot send empty medical query');
         return { success: false, error: 'Empty message' };
     }
 
     try {
-        const result = await ipcRenderer.invoke('send-text-message', text);
-        if (result.success) {
-            console.log('Text message sent successfully');
-        } else {
-            console.error('Failed to send text message:', result.error);
-        }
-        return result;
+        console.log('Sending medical query to MediSearch:', text);
+        await ipcRenderer.invoke('send-medical-query', text);
+        return { success: true };
     } catch (error) {
-        console.error('Error sending text message:', error);
+        console.error('Error sending medical query:', error);
         return { success: false, error: error.message };
     }
+}
+
+// Legacy function for compatibility
+async function sendTextMessage(text) {
+    console.log('Redirecting text message to medical query...');
+    return await sendMedicalQuery(text);
 }
 
 // Conversation storage functions using IndexedDB
@@ -763,10 +776,12 @@ const cheddar = {
     setResponse: response => cheatingDaddyApp.setResponse(response),
 
     // Core functionality
-    initializeGemini,
+    initializeGemini, // Legacy compatibility
+    initializeMediSearch,
     startCapture,
     stopCapture,
-    sendTextMessage,
+    sendTextMessage, // Legacy compatibility
+    sendMedicalQuery,
     handleShortcut,
 
     // Conversation history functions

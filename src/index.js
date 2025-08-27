@@ -4,7 +4,8 @@ if (require('electron-squirrel-startup')) {
 
 const { app, BrowserWindow, shell, ipcMain } = require('electron');
 const { createWindow, updateGlobalShortcuts } = require('./utils/window');
-const { setupGeminiIpcHandlers, stopMacOSAudioCapture, sendToRenderer } = require('./utils/gemini');
+const { stopMacOSAudioCapture, sendToRenderer } = require('./utils/gemini');
+require('./utils/medisearch'); // Initialize MediSearch handlers
 const { initializeRandomProcessNames } = require('./utils/processRandomizer');
 const { applyAntiAnalysisMeasures } = require('./utils/stealthFeatures');
 const { getLocalConfig, writeConfig } = require('./config');
@@ -25,7 +26,6 @@ app.whenReady().then(async () => {
     await applyAntiAnalysisMeasures();
 
     createMainWindow();
-    setupGeminiIpcHandlers(geminiSessionRef);
     setupGeneralIpcHandlers();
 });
 

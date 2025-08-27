@@ -8,6 +8,7 @@ export class AssistantView extends LitElement {
             flex-direction: column;
         }
 
+
         * {
             font-family: 'Inter', sans-serif;
             cursor: default;
@@ -17,13 +18,37 @@ export class AssistantView extends LitElement {
             height: calc(100% - 60px);
             overflow-y: auto;
             border-radius: 10px;
-            font-size: var(--response-font-size, 18px);
-            line-height: 1.6;
+            font-size: var(--response-font-size, 16px);
+            line-height: 1.7;
             background: var(--main-content-background);
-            padding: 16px;
+            backdrop-filter: var(--main-content-backdrop-filter);
+            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
+            border: 1px solid var(--border-color);
+            padding: 24px;
             scroll-behavior: smooth;
             user-select: text;
             cursor: text;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            letter-spacing: 0.01em;
+            word-spacing: 0.05em;
+        }
+
+        /* Elegant scrollbar */
+        .response-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .response-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .response-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        .response-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Allow text selection for all content within the response container */
@@ -37,16 +62,42 @@ export class AssistantView extends LitElement {
             cursor: pointer;
         }
 
-        /* Animated word-by-word reveal */
-        .response-container [data-word] {
-            opacity: 0;
-            filter: blur(10px);
-            display: inline-block;
-            transition: opacity 0.5s, filter 0.5s;
+        /* Smooth, epilepsy-friendly streaming animation */
+        .response-container.streaming {
+            position: relative;
         }
-        .response-container [data-word].visible {
+        
+        .response-container.streaming::after {
+            content: '';
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: var(--text-color);
+            animation: blink 1s infinite;
+            margin-left: 2px;
+            vertical-align: baseline;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Remove jarring word-by-word animation */
+        .response-container [data-word] {
+            display: inline;
             opacity: 1;
-            filter: blur(0px);
+            transform: none;
+            transition: none;
+        }
+        
+        /* Smooth fade-in for new content */
+        .response-container {
+            transition: opacity 0.15s ease-out;
+        }
+        
+        .response-container.updating {
+            opacity: 0.95;
         }
 
         /* Markdown styling */
@@ -58,6 +109,7 @@ export class AssistantView extends LitElement {
         .response-container h6 {
             margin: 1.2em 0 0.6em 0;
             color: var(--text-color);
+            text-shadow: var(--text-shadow);
             font-weight: 600;
         }
 
@@ -81,8 +133,19 @@ export class AssistantView extends LitElement {
         }
 
         .response-container p {
-            margin: 0.8em 0;
+            margin: 1.2em 0;
             color: var(--text-color);
+            text-shadow: var(--text-shadow);
+            text-align: justify;
+            hyphens: auto;
+        }
+        
+        .response-container p:first-child {
+            margin-top: 0;
+        }
+        
+        .response-container p:last-child {
+            margin-bottom: 0;
         }
 
         .response-container ul,
@@ -90,6 +153,7 @@ export class AssistantView extends LitElement {
             margin: 0.8em 0;
             padding-left: 2em;
             color: var(--text-color);
+            text-shadow: var(--text-shadow);
         }
 
         .response-container li {
@@ -199,17 +263,22 @@ export class AssistantView extends LitElement {
         .text-input-container input {
             flex: 1;
             background: var(--input-background);
-            color: var(--text-color);
+            color: var(--input-text-color);
+            text-shadow: var(--text-shadow);
             border: 1px solid var(--button-border);
             padding: 10px 14px;
             border-radius: 8px;
             font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: var(--input-backdrop-filter);
+            -webkit-backdrop-filter: var(--input-backdrop-filter);
+            transition: all 0.2s ease;
         }
 
         .text-input-container input:focus {
             outline: none;
             border-color: var(--focus-border-color);
-            box-shadow: 0 0 0 3px var(--focus-box-shadow);
+            box-shadow: var(--focus-box-shadow);
             background: var(--input-focus-background);
         }
 
@@ -307,6 +376,7 @@ export class AssistantView extends LitElement {
         this.selectedProfile = 'interview';
         this.onSendText = () => {};
         this._lastAnimatedWordCount = 0;
+        this._updatePending = false;
         // Load saved responses from localStorage
         try {
             this.savedResponses = JSON.parse(localStorage.getItem('savedResponses') || '[]');
@@ -330,8 +400,9 @@ export class AssistantView extends LitElement {
         const profileNames = this.getProfileNames();
         return this.responses.length > 0 && this.currentResponseIndex >= 0
             ? this.responses[this.currentResponseIndex]
-            : `Hey, Im listening to your ${profileNames[this.selectedProfile] || 'session'}?`;
+            : `What medical question do you have?`;
     }
+
 
     renderMarkdown(content) {
         // Check if marked is available
@@ -344,43 +415,24 @@ export class AssistantView extends LitElement {
                     sanitize: false, // We trust the AI responses
                 });
                 let rendered = window.marked.parse(content);
-                rendered = this.wrapWordsInSpans(rendered);
                 return rendered;
             } catch (error) {
                 console.warn('Error parsing markdown:', error);
-                return content; // Fallback to plain text
+                return this.formatPlainText(content);
             }
         }
-        console.log('Marked not available, using plain text');
-        return content; // Fallback if marked is not available
+        console.log('Marked not available, using plain text formatting');
+        return this.formatPlainText(content);
     }
 
-    wrapWordsInSpans(html) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const tagsToSkip = ['PRE'];
-
-        function wrap(node) {
-            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() && !tagsToSkip.includes(node.parentNode.tagName)) {
-                const words = node.textContent.split(/(\s+)/);
-                const frag = document.createDocumentFragment();
-                words.forEach(word => {
-                    if (word.trim()) {
-                        const span = document.createElement('span');
-                        span.setAttribute('data-word', '');
-                        span.textContent = word;
-                        frag.appendChild(span);
-                    } else {
-                        frag.appendChild(document.createTextNode(word));
-                    }
-                });
-                node.parentNode.replaceChild(frag, node);
-            } else if (node.nodeType === Node.ELEMENT_NODE && !tagsToSkip.includes(node.tagName)) {
-                Array.from(node.childNodes).forEach(wrap);
-            }
-        }
-        Array.from(doc.body.childNodes).forEach(wrap);
-        return doc.body.innerHTML;
+    formatPlainText(content) {
+        // Simple plain text formatting with line breaks
+        return content
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^/, '<p>')
+            .replace(/$/, '</p>')
+            .replace(/<p><\/p>/g, '');
     }
 
     getResponseCounter() {
@@ -552,7 +604,14 @@ export class AssistantView extends LitElement {
             if (changedProperties.has('currentResponseIndex')) {
                 this._lastAnimatedWordCount = 0;
             }
-            this.updateResponseContent();
+            // Throttle updates for smoother streaming
+            if (!this._updatePending) {
+                this._updatePending = true;
+                requestAnimationFrame(() => {
+                    this.updateResponseContent();
+                    this._updatePending = false;
+                });
+            }
         }
     }
 
@@ -562,28 +621,32 @@ export class AssistantView extends LitElement {
         if (container) {
             const currentResponse = this.getCurrentResponse();
             console.log('Current response:', currentResponse);
+            
+            // Show streaming indicator if response is being updated
+            if (this.shouldAnimateResponse) {
+                container.classList.add('streaming');
+                // Remove streaming class after a delay to show completion
+                clearTimeout(this._streamingTimeout);
+                this._streamingTimeout = setTimeout(() => {
+                    container.classList.remove('streaming');
+                    this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
+                }, 2000);
+            } else {
+                container.classList.remove('streaming');
+            }
+            
+            // Apply brief update indication for smooth transition
+            container.classList.add('updating');
+            
             const renderedResponse = this.renderMarkdown(currentResponse);
             console.log('Rendered response:', renderedResponse);
-            container.innerHTML = renderedResponse;
-            const words = container.querySelectorAll('[data-word]');
-            if (this.shouldAnimateResponse) {
-                for (let i = 0; i < this._lastAnimatedWordCount && i < words.length; i++) {
-                    words[i].classList.add('visible');
-                }
-                for (let i = this._lastAnimatedWordCount; i < words.length; i++) {
-                    words[i].classList.remove('visible');
-                    setTimeout(() => {
-                        words[i].classList.add('visible');
-                        if (i === words.length - 1) {
-                            this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
-                        }
-                    }, (i - this._lastAnimatedWordCount) * 100);
-                }
-                this._lastAnimatedWordCount = words.length;
-            } else {
-                words.forEach(word => word.classList.add('visible'));
-                this._lastAnimatedWordCount = words.length;
-            }
+            
+            // Use requestAnimationFrame for smooth DOM update
+            requestAnimationFrame(() => {
+                container.innerHTML = renderedResponse;
+                container.classList.remove('updating');
+            });
+            
         } else {
             console.log('Response container not found');
         }

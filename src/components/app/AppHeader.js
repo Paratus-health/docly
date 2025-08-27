@@ -13,16 +13,30 @@ export class AppHeader extends LitElement {
             display: flex;
             align-items: center;
             padding: var(--header-padding);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             background: var(--header-background);
+            backdrop-filter: var(--header-backdrop-filter);
+            -webkit-backdrop-filter: var(--header-backdrop-filter);
             border-radius: var(--border-radius);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+                0 1px 0 0 rgba(255, 255, 255, 0.25) inset;
+            position: relative;
+            overflow: hidden;
         }
 
         .header-title {
             flex: 1;
             font-size: var(--header-font-size);
-            font-weight: 600;
+            font-weight: 700;
             -webkit-app-region: drag;
+            text-shadow: var(--text-shadow);
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f8f9fa 0%, rgba(248, 249, 250, 0.95) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header-actions {
@@ -40,23 +54,32 @@ export class AppHeader extends LitElement {
         .button {
             background: var(--button-background);
             color: var(--text-color);
+            text-shadow: var(--button-text-shadow);
             border: 1px solid var(--button-border);
             padding: var(--header-button-padding);
             border-radius: 8px;
             font-size: var(--header-font-size-small);
-            font-weight: 500;
+            font-weight: 600;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            transform: translateZ(0);
         }
 
         .icon-button {
             background: none;
             color: var(--icon-button-color);
+            text-shadow: var(--button-text-shadow);
             border: none;
             padding: var(--header-icon-padding);
             border-radius: 8px;
             font-size: var(--header-font-size-small);
             font-weight: 500;
             display: flex;
-            opacity: 0.6;
+            opacity: 0.9;
             transition: opacity 0.2s ease;
         }
 
@@ -72,6 +95,10 @@ export class AppHeader extends LitElement {
 
         .button:hover {
             background: var(--hover-background);
+            transform: translateY(-1px) translateZ(0);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset;
         }
 
         :host([isclickthrough]) .button:hover,
@@ -174,15 +201,15 @@ export class AppHeader extends LitElement {
 
     getViewTitle() {
         const titles = {
-            onboarding: 'Welcome to Cheating Daddy',
-            main: 'Cheating Daddy',
+            onboarding: 'Welcome to Docly',
+            main: 'Docly',
             customize: 'Customize',
             help: 'Help & Shortcuts',
             history: 'Conversation History',
             advanced: 'Advanced Tools',
-            assistant: 'Cheating Daddy',
+            assistant: 'Docly',
         };
-        return titles[this.currentView] || 'Cheating Daddy';
+        return titles[this.currentView] || 'Docly';
     }
 
     getElapsedTime() {

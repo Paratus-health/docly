@@ -25,6 +25,7 @@ export class CheatingDaddyApp extends LitElement {
             height: 100vh;
             background-color: var(--background-transparent);
             color: var(--text-color);
+            text-shadow: var(--text-shadow);
         }
 
         .window-container {
@@ -45,8 +46,16 @@ export class CheatingDaddyApp extends LitElement {
             overflow-y: auto;
             margin-top: var(--main-content-margin-top);
             border-radius: var(--content-border-radius);
-            transition: all 0.15s ease-out;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             background: var(--main-content-background);
+            backdrop-filter: var(--main-content-backdrop-filter);
+            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
+            animation: scaleIn 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         .main-content.with-border {
@@ -67,13 +76,14 @@ export class CheatingDaddyApp extends LitElement {
         .view-container {
             opacity: 1;
             transform: translateY(0);
-            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+            transition: opacity 0.4s cubic-bezier(0.4, 0.0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
             height: 100%;
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         .view-container.entering {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
         }
 
         ::-webkit-scrollbar {
@@ -276,7 +286,7 @@ export class CheatingDaddyApp extends LitElement {
             return;
         }
 
-        await cheddar.initializeGemini(this.selectedProfile, this.selectedLanguage);
+        await cheddar.initializeMediSearch(this.selectedProfile, this.selectedLanguage);
         // Pass the screenshot interval as string (including 'manual' option)
         cheddar.startCapture(this.selectedScreenshotInterval, this.selectedImageQuality);
         this.responses = [];
@@ -288,7 +298,7 @@ export class CheatingDaddyApp extends LitElement {
     async handleAPIKeyHelp() {
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
-            await ipcRenderer.invoke('open-external', 'https://cheatingdaddy.com/help/api-key');
+            await ipcRenderer.invoke('open-external', 'https://medisearch.io/developers/docs');
         }
     }
 
@@ -330,13 +340,13 @@ export class CheatingDaddyApp extends LitElement {
 
     // Assistant view event handlers
     async handleSendText(message) {
-        const result = await window.cheddar.sendTextMessage(message);
+        const result = await window.cheddar.sendMedicalQuery(message);
 
         if (!result.success) {
-            console.error('Failed to send message:', result.error);
-            this.setStatus('Error sending message: ' + result.error);
+            console.error('Failed to send medical query:', result.error);
+            this.setStatus('Error sending query: ' + result.error);
         } else {
-            this.setStatus('Message sent...');
+            this.setStatus('Processing medical query...');
             this._awaitingNewResponse = true;
         }
     }

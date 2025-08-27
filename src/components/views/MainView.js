@@ -10,10 +10,16 @@ export class MainView extends LitElement {
         }
 
         .welcome {
-            font-size: 24px;
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
             margin-top: auto;
+            text-shadow: var(--text-shadow);
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f8f9fa 0%, rgba(248, 249, 250, 0.95) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .input-group {
@@ -28,19 +34,26 @@ export class MainView extends LitElement {
 
         input {
             background: var(--input-background);
-            color: var(--text-color);
-            border: 1px solid var(--button-border);
-            padding: 10px 14px;
+            color: var(--input-text-color);
+            text-shadow: var(--text-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 12px 16px;
             width: 100%;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.2s ease;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            backdrop-filter: var(--input-backdrop-filter);
+            -webkit-backdrop-filter: var(--input-backdrop-filter);
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
         }
 
         input:focus {
             outline: none;
             border-color: var(--focus-border-color);
-            box-shadow: 0 0 0 3px var(--focus-box-shadow);
+            box-shadow: var(--focus-box-shadow);
             background: var(--input-focus-background);
         }
 
@@ -75,19 +88,32 @@ export class MainView extends LitElement {
             background: var(--start-button-background);
             color: var(--start-button-color);
             border: 1px solid var(--start-button-border);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
             white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 
+                0 4px 16px rgba(0, 122, 255, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transform: translateZ(0);
         }
 
         .start-button:hover {
             background: var(--start-button-hover-background);
             border-color: var(--start-button-hover-border);
+            transform: translateY(-2px) translateZ(0);
+            box-shadow: 
+                0 8px 24px rgba(0, 122, 255, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+                0 1px 0 0 rgba(255, 255, 255, 0.3) inset;
         }
 
         .start-button.initializing {
@@ -283,12 +309,12 @@ export class MainView extends LitElement {
 
     render() {
         return html`
-            <div class="welcome">Welcome</div>
+            <div class="welcome">Medical Assistant</div>
 
             <div class="input-group">
                 <input
                     type="password"
-                    placeholder="Enter your Gemini API Key"
+                    placeholder="Enter your MediSearch API Key"
                     .value=${localStorage.getItem('apiKey') || ''}
                     @input=${this.handleInput}
                     class="${this.showApiKeyError ? 'api-key-error' : ''}"
