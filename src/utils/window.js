@@ -1,10 +1,29 @@
-const { BrowserWindow, globalShortcut, ipcMain, screen } = require('electron');
+const { BrowserWindow, globalShortcut, ipcMain, screen, app } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('os');
 const { applyStealthMeasures, startTitleRandomization } = require('./stealthFeatures');
 
-let mouseEventsIgnored = false;
+// Suppress Electron's crash reporter and error dialogs
+app.disableHardwareAcceleration = false; // Keep hardware acceleration
+process.crashReporter = { start: () => {} }; // Disable crash reporter
+
+// Override Electron's internal error handling
+process.on('uncaughtException', (error) => {
+    // Completely suppress these specific errors that cause dialogs
+    if (error.code === 'EPIPE' || 
+        error.message?.includes('EPIPE') || 
+        error.message?.includes('write after end') ||
+        error.message?.includes('afterWriteDispatched') ||
+        error.message?.includes('writeGeneric') ||
+        error.message?.includes('Object has been destroyed') ||
+        error.message?.includes('Socket._write') ||
+        error.message?.includes('destroyed')) {
+        return; // Don't propagate these errors
+    }
+});
+
+// Mouse events always enabled - click-through functionality removed
 let windowResizing = false;
 let resizeAnimation = null;
 const RESIZE_ANIMATION_DURATION = 500; // milliseconds
@@ -61,8 +80,12 @@ function createWindow(sendToRenderer, geminiSessionRef, randomNames = null) {
     );
 
     mainWindow.setResizable(false);
-    mainWindow.setContentProtection(true);
+    mainWindow.setContentProtection(false); // Disable screenshot protection
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    
+    // Ensure mouse events are always enabled (no click-through by default)
+    mainWindow.setIgnoreMouseEvents(false);
+    
 
     // Center window at the top of the screen
     const primaryDisplay = screen.getPrimaryDisplay();
@@ -89,6 +112,14 @@ function createWindow(sendToRenderer, geminiSessionRef, randomNames = null) {
     // Start periodic title randomization for additional stealth
     startTitleRandomization(mainWindow);
 
+    // Hide window when it loses focus (click outside)
+    mainWindow.on('blur', () => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            console.log('Window lost focus - hiding window');
+            mainWindow.hide();
+        }
+    });
+
     // After window is created, check for layout preference and resize if needed
     mainWindow.webContents.once('dom-ready', () => {
         setTimeout(() => {
@@ -114,21 +145,15 @@ function createWindow(sendToRenderer, geminiSessionRef, randomNames = null) {
                         keybinds = { ...defaultKeybinds, ...savedSettings.keybinds };
                     }
 
-                    // Apply content protection setting via IPC handler
-                    try {
-                        const contentProtection = await mainWindow.webContents.executeJavaScript('cheddar.getContentProtection()');
-                        mainWindow.setContentProtection(contentProtection);
-                        console.log('Content protection loaded from settings:', contentProtection);
-                    } catch (error) {
-                        console.error('Error loading content protection:', error);
-                        mainWindow.setContentProtection(true);
-                    }
+                    // Always disable content protection for screenshots
+                    mainWindow.setContentProtection(false);
+                    console.log('Content protection disabled - screenshots allowed');
 
                     updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessionRef);
                 })
                 .catch(() => {
-                    // Default to content protection enabled
-                    mainWindow.setContentProtection(true);
+                    // Always disable content protection
+                    mainWindow.setContentProtection(false);
                     updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessionRef);
                 });
         }, 150);
@@ -170,22 +195,22 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
     // Register window movement shortcuts
     const movementActions = {
         moveUp: () => {
-            if (!mainWindow.isVisible()) return;
+            if (mainWindow.isDestroyed() || !mainWindow.isVisible()) return;
             const [currentX, currentY] = mainWindow.getPosition();
             mainWindow.setPosition(currentX, currentY - moveIncrement);
         },
         moveDown: () => {
-            if (!mainWindow.isVisible()) return;
+            if (mainWindow.isDestroyed() || !mainWindow.isVisible()) return;
             const [currentX, currentY] = mainWindow.getPosition();
             mainWindow.setPosition(currentX, currentY + moveIncrement);
         },
         moveLeft: () => {
-            if (!mainWindow.isVisible()) return;
+            if (mainWindow.isDestroyed() || !mainWindow.isVisible()) return;
             const [currentX, currentY] = mainWindow.getPosition();
             mainWindow.setPosition(currentX - moveIncrement, currentY);
         },
         moveRight: () => {
-            if (!mainWindow.isVisible()) return;
+            if (mainWindow.isDestroyed() || !mainWindow.isVisible()) return;
             const [currentX, currentY] = mainWindow.getPosition();
             mainWindow.setPosition(currentX + moveIncrement, currentY);
         },
@@ -208,6 +233,7 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
     if (keybinds.toggleVisibility) {
         try {
             globalShortcut.register(keybinds.toggleVisibility, () => {
+                if (mainWindow.isDestroyed()) return;
                 if (mainWindow.isVisible()) {
                     mainWindow.hide();
                 } else {
@@ -220,25 +246,8 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
         }
     }
 
-    // Register toggle click-through shortcut
-    if (keybinds.toggleClickThrough) {
-        try {
-            globalShortcut.register(keybinds.toggleClickThrough, () => {
-                mouseEventsIgnored = !mouseEventsIgnored;
-                if (mouseEventsIgnored) {
-                    mainWindow.setIgnoreMouseEvents(true, { forward: true });
-                    console.log('Mouse events ignored');
-                } else {
-                    mainWindow.setIgnoreMouseEvents(false);
-                    console.log('Mouse events enabled');
-                }
-                mainWindow.webContents.send('click-through-toggled', mouseEventsIgnored);
-            });
-            console.log(`Registered toggleClickThrough: ${keybinds.toggleClickThrough}`);
-        } catch (error) {
-            console.error(`Failed to register toggleClickThrough (${keybinds.toggleClickThrough}):`, error);
-        }
-    }
+    // Click-through feature disabled - window will always respond to mouse events
+    console.log('Click-through functionality disabled - mouse events always enabled');
 
     // Register next step shortcut (either starts session or takes screenshot based on view)
     if (keybinds.nextStep) {

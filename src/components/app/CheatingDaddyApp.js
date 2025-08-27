@@ -238,6 +238,8 @@ export class CheatingDaddyApp extends LitElement {
             this._currentResponseIsComplete = false;
             console.log('[setResponse] Added response as new:', response);
         }
+        
+        
         this.shouldAnimateResponse = true;
         this.requestUpdate();
     }
@@ -385,6 +387,12 @@ export class CheatingDaddyApp extends LitElement {
         this._currentResponseIsComplete = true;
         this.setStatus('Ready');
         
+        // Clear chat history in assistant view
+        const assistantView = this.shadowRoot.querySelector('assistant-view');
+        if (assistantView) {
+            assistantView.chatHistory = [];
+        }
+        
         // Notify medisearch.js to start new conversation
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
@@ -505,6 +513,27 @@ export class CheatingDaddyApp extends LitElement {
                             this.shouldAnimateResponse = false;
                             this._currentResponseIsComplete = true;
                             console.log('[response-animation-complete] Marked current response as complete');
+                            
+                            // Add assistant response to chat history when animation completes
+                            const assistantView = this.shadowRoot.querySelector('assistant-view');
+                            const currentResponse = this.responses[this.currentResponseIndex];
+                            if (assistantView && currentResponse) {
+                                // Check if this response is already in chat history to avoid duplicates
+                                const lastMessage = assistantView.chatHistory[assistantView.chatHistory.length - 1];
+                                if (!lastMessage || lastMessage.role !== 'assistant' || lastMessage.content !== currentResponse) {
+                                    assistantView.chatHistory = [...assistantView.chatHistory, {
+                                        role: 'assistant',
+                                        content: currentResponse,
+                                        timestamp: new Date()
+                                    }];
+                                }
+                                
+                                // Auto-scroll to bottom after response is complete
+                                setTimeout(() => {
+                                    assistantView.scrollToBottom();
+                                }, 100);
+                            }
+                            
                             this.requestUpdate();
                         }}
                     ></assistant-view>

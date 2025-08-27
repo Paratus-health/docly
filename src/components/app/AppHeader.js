@@ -31,12 +31,9 @@ export class AppHeader extends LitElement {
             font-size: var(--header-font-size);
             font-weight: 700;
             -webkit-app-region: drag;
-            text-shadow: var(--text-shadow);
             letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #f8f9fa 0%, rgba(248, 249, 250, 0.95) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .header-actions {

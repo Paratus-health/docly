@@ -6,34 +6,63 @@ export class AssistantView extends LitElement {
             height: 100%;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .content-wrapper {
             display: flex;
             flex-direction: column;
-            height: calc(100% - 70px);
+            height: 100%;
+            overflow: hidden;
+            gap: 16px;
+            padding: 16px;
         }
 
         .tab-container {
-            background: var(--main-content-background);
-            backdrop-filter: var(--main-content-backdrop-filter);
-            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            backdrop-filter: blur(24px) saturate(120%);
+            -webkit-backdrop-filter: blur(24px) saturate(120%);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 8px 16px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            height: 100%;
+            flex: 1;
+            min-height: 0;
             overflow: hidden;
         }
 
+        .tab-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
+            pointer-events: none;
+            border-radius: 16px 16px 0 0;
+        }
+
         .tab-header {
+            position: relative;
+            z-index: 1;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid var(--border-color);
-            padding: 4px;
-            gap: 4px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px) saturate(120%);
+            -webkit-backdrop-filter: blur(20px) saturate(120%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 20px 24px;
+            gap: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            border-radius: 16px 16px 0 0;
+            flex-shrink: 0;
         }
 
         .tab-nav {
@@ -48,60 +77,76 @@ export class AssistantView extends LitElement {
         }
 
         .conversation-title {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
 
         .new-chat-button {
-            padding: 6px 12px;
-            background: linear-gradient(135deg, #007AFF, #5856D6);
-            color: white;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(99, 102, 241) 100%);
             border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
+            color: white;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
         }
 
         .new-chat-button:hover {
-            background: linear-gradient(135deg, #0056CC, #4940B8);
+            background: linear-gradient(135deg, rgb(37, 99, 235) 0%, rgb(79, 70, 229) 100%);
             transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .new-chat-button:active {
+            transform: translateY(0);
         }
 
         .tab-button {
             padding: 8px 16px;
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 13px;
             font-weight: 500;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            text-shadow: none;
+            backdrop-filter: blur(8px);
         }
 
         .tab-button.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
 
         .tab-button:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
         }
 
         .tab-content {
             flex: 1;
-            overflow-y: auto;
-            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
         }
 
         .response-content {
@@ -109,7 +154,9 @@ export class AssistantView extends LitElement {
         }
 
         .response-content.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .sources-content {
@@ -117,25 +164,32 @@ export class AssistantView extends LitElement {
         }
 
         .sources-content.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            padding: 32px;
         }
 
         .sources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .source-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.15s ease;
             position: relative;
             overflow: hidden;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: none;
+            backdrop-filter: blur(10px);
         }
 
         .source-item::before {
@@ -145,16 +199,16 @@ export class AssistantView extends LitElement {
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #007AFF, #5856D6);
+            background: linear-gradient(90deg, rgb(59, 130, 246), rgb(99, 102, 241));
             transform: translateX(-100%);
             transition: transform 0.3s ease;
         }
 
         .source-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(59, 130, 246, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
         }
 
         .source-item:hover::before {
@@ -164,7 +218,7 @@ export class AssistantView extends LitElement {
         .source-title {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-color);
+            color: rgba(255, 255, 255, 0.95);
             line-height: 1.4;
             margin-bottom: 8px;
         }
@@ -188,13 +242,13 @@ export class AssistantView extends LitElement {
 
         .source-year {
             font-weight: 600;
-            color: #007AFF;
+            color: rgb(59, 130, 246);
             font-size: 12px;
         }
 
         .source-authors {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.6);
             line-height: 1.3;
         }
 
@@ -224,21 +278,23 @@ export class AssistantView extends LitElement {
         .prompt-textarea {
             width: 100%;
             min-height: 200px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
             color: var(--text-color);
             padding: 16px;
             font-size: 14px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             line-height: 1.5;
             resize: vertical;
+            text-shadow: none;
         }
 
         .prompt-textarea:focus {
             outline: none;
-            border-color: #007AFF;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+            border-color: rgba(0, 0, 0, 0.16);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.02);
+            background: rgba(0, 0, 0, 0.04);
         }
 
         .prompt-actions {
@@ -248,28 +304,35 @@ export class AssistantView extends LitElement {
         }
 
         .prompt-button {
-            background: linear-gradient(135deg, #007AFF, #5856D6);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: rgb(51, 51, 51);
+            border-radius: 10px;
+            padding: 10px 16px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            text-shadow: none;
         }
 
         .prompt-button:hover {
-            background: linear-gradient(135deg, #0056CC, #4940B8);
+            background: rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 0, 0, 0.14);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .prompt-button.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.06);
+            color: rgba(51, 51, 51, 0.7);
         }
 
         .prompt-button.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.06);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: rgb(51, 51, 51);
         }
 
 
@@ -279,21 +342,65 @@ export class AssistantView extends LitElement {
         }
 
         .response-container {
-            height: auto;
-            border-radius: 10px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
+            border-radius: 0;
             font-size: var(--response-font-size, 16px);
-            line-height: 1.7;
-            background: var(--main-content-background);
-            backdrop-filter: var(--main-content-backdrop-filter);
-            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
-            border: 1px solid var(--border-color);
-            padding: 24px;
+            line-height: 1.8;
+            background: transparent;
+            border: none;
             scroll-behavior: smooth;
             user-select: text;
             cursor: text;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             letter-spacing: 0.01em;
             word-spacing: 0.05em;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: none;
+            min-height: 0;
+            max-height: none;
+        }
+
+        .chat-message {
+            margin-bottom: 24px;
+            padding: 24px 32px;
+            border-radius: 14px;
+        }
+
+        .chat-message.user {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            margin-left: 40px;
+            margin-right: 32px;
+        }
+
+        .chat-message.assistant {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .message-role {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message-content {
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.6;
+        }
+
+        .message-timestamp {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 6px;
         }
 
         /* Elegant scrollbar */
@@ -326,12 +433,16 @@ export class AssistantView extends LitElement {
         }
 
         /* Loading animation for waiting responses */
-        .response-container.loading {
+        .thinking-indicator {
+            padding: 16px 24px;
+            background: rgba(248, 250, 252, 0.95);
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
             display: flex;
             align-items: center;
-            justify-content: center;
-            min-height: 100px;
-            position: relative;
+            gap: 12px;
+            font-size: 14px;
+            color: rgb(71, 85, 105);
+            opacity: 0.8;
         }
 
         .loading-animation {
@@ -426,7 +537,7 @@ export class AssistantView extends LitElement {
         .response-container h6 {
             margin: 1.2em 0 0.6em 0;
             color: var(--text-color);
-            text-shadow: var(--text-shadow);
+            text-shadow: none;
             font-weight: 600;
         }
 
@@ -452,7 +563,7 @@ export class AssistantView extends LitElement {
         .response-container p {
             margin: 1.2em 0;
             color: var(--text-color);
-            text-shadow: var(--text-shadow);
+            text-shadow: none;
             text-align: justify;
             hyphens: auto;
         }
@@ -470,7 +581,7 @@ export class AssistantView extends LitElement {
             margin: 0.8em 0;
             padding-left: 2em;
             color: var(--text-color);
-            text-shadow: var(--text-shadow);
+            text-shadow: none;
         }
 
         .response-container li {
@@ -573,21 +684,21 @@ export class AssistantView extends LitElement {
         .text-input-container {
             display: flex;
             gap: 12px;
-            margin-top: 16px;
             align-items: stretch;
-            background: var(--main-content-background);
-            backdrop-filter: var(--main-content-backdrop-filter);
-            -webkit-backdrop-filter: var(--main-content-backdrop-filter);
-            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px) saturate(120%);
+            -webkit-backdrop-filter: blur(20px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
-            padding: 8px;
+            padding: 10px;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
 
         .text-input-container:focus-within {
-            border-color: #007AFF;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.05), 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .input-wrapper {
@@ -596,19 +707,19 @@ export class AssistantView extends LitElement {
             align-items: center;
             gap: 12px;
             padding: 4px 12px;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             transition: all 0.2s ease;
         }
 
         .input-wrapper:focus-within {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .text-input-container input {
             flex: 1;
             background: transparent;
-            color: var(--text-color);
+            color: rgba(255, 255, 255, 0.9);
             border: none;
             padding: 12px 0;
             font-size: 15px;
@@ -622,12 +733,12 @@ export class AssistantView extends LitElement {
         }
 
         .text-input-container input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
             font-weight: 400;
         }
 
         .send-button {
-            background: linear-gradient(135deg, #007AFF, #5856D6);
+            background: linear-gradient(135deg, rgb(59, 130, 246), rgb(99, 102, 241));
             color: white;
             border: none;
             border-radius: 12px;
@@ -644,9 +755,9 @@ export class AssistantView extends LitElement {
         }
 
         .send-button:hover {
-            background: linear-gradient(135deg, #0056CC, #4940B8);
+            background: linear-gradient(135deg, rgb(37, 99, 235), rgb(79, 70, 229));
             transform: translateY(-1px);
-            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
         }
 
         .send-button:active {
@@ -654,8 +765,8 @@ export class AssistantView extends LitElement {
         }
 
         .send-button:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.4);
+            background: rgba(148, 163, 184, 0.4);
+            color: rgba(71, 85, 105, 0.5);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -748,6 +859,7 @@ export class AssistantView extends LitElement {
         conversationId: { type: String },
         conversationTitle: { type: String },
         isLoading: { type: Boolean },
+        chatHistory: { type: Array },
     };
 
     constructor() {
@@ -764,6 +876,7 @@ export class AssistantView extends LitElement {
         this.conversationId = Date.now().toString();
         this.conversationTitle = 'New Chat';
         this.isLoading = false;
+        this.chatHistory = [];
         // Load saved responses from localStorage
         try {
             this.savedResponses = JSON.parse(localStorage.getItem('savedResponses') || '[]');
@@ -820,6 +933,30 @@ export class AssistantView extends LitElement {
             .replace(/^/, '<p>')
             .replace(/$/, '</p>')
             .replace(/<p><\/p>/g, '');
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        
+        if (diff < 60000) { // Less than 1 minute
+            return 'Just now';
+        } else if (diff < 3600000) { // Less than 1 hour
+            const minutes = Math.floor(diff / 60000);
+            return `${minutes}m ago`;
+        } else if (diff < 86400000) { // Less than 1 day
+            const hours = Math.floor(diff / 3600000);
+            return `${hours}h ago`;
+        } else {
+            return date.toLocaleDateString();
+        }
     }
 
     getResponseCounter() {
@@ -937,6 +1074,10 @@ export class AssistantView extends LitElement {
         const textInput = this.shadowRoot.querySelector('#textInput');
         if (textInput && textInput.value.trim()) {
             const message = textInput.value.trim();
+            
+            // Add user message to chat history
+            this.chatHistory = [...this.chatHistory, { role: 'user', content: message, timestamp: new Date() }];
+            
             textInput.value = ''; // Clear input
             this.isLoading = true;
             this.requestUpdate();
@@ -982,10 +1123,30 @@ export class AssistantView extends LitElement {
     }
 
     newChat() {
+        // Save current chat to history if it has content
+        if (this.responses.length > 0 || this.chatHistory.length > 0) {
+            const currentChat = {
+                id: this.conversationId,
+                title: this.conversationTitle,
+                responses: [...this.responses],
+                chatHistory: [...this.chatHistory],
+                sources: [...this.sources],
+                timestamp: new Date()
+            };
+            
+            // Save to localStorage for persistence
+            const savedChats = JSON.parse(localStorage.getItem('savedChats') || '[]');
+            savedChats.unshift(currentChat); // Add to beginning
+            // Keep only last 50 chats
+            if (savedChats.length > 50) savedChats.splice(50);
+            localStorage.setItem('savedChats', JSON.stringify(savedChats));
+        }
+        
         // Create new conversation
         this.conversationId = Date.now().toString();
         this.conversationTitle = 'New Chat';
         this.activeTab = 'response';
+        this.chatHistory = [];
         
         // Notify parent component to start new conversation
         // Parent will handle clearing responses, sources, and backend state
@@ -1008,12 +1169,31 @@ export class AssistantView extends LitElement {
     }
 
     scrollToBottom() {
-        setTimeout(() => {
-            const container = this.shadowRoot.querySelector('.response-container');
+        requestAnimationFrame(() => {
+            const container = this.shadowRoot.querySelector('#responseContainer');
             if (container) {
                 container.scrollTop = container.scrollHeight;
             }
-        }, 0);
+        });
+    }
+
+    scrollToNewAnswer() {
+        requestAnimationFrame(() => {
+            const container = this.shadowRoot.querySelector('#responseContainer');
+            if (container) {
+                // Find the last assistant message (the new answer being typed)
+                const assistantMessages = container.querySelectorAll('.chat-message.assistant');
+                if (assistantMessages.length > 0) {
+                    const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+                    // Scroll to show the top of the new answer
+                    lastAssistantMessage.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start',
+                        inline: 'nearest'
+                    });
+                }
+            }
+        });
     }
 
     saveCurrentResponse() {
@@ -1045,7 +1225,7 @@ export class AssistantView extends LitElement {
 
     updated(changedProperties) {
         super.updated(changedProperties);
-        if (changedProperties.has('responses') || changedProperties.has('currentResponseIndex') || changedProperties.has('isLoading')) {
+        if (changedProperties.has('responses') || changedProperties.has('currentResponseIndex') || changedProperties.has('isLoading') || changedProperties.has('chatHistory')) {
             if (changedProperties.has('currentResponseIndex')) {
                 this._lastAnimatedWordCount = 0;
             }
@@ -1059,6 +1239,15 @@ export class AssistantView extends LitElement {
                 requestAnimationFrame(() => {
                     this.updateResponseContent();
                     this._updatePending = false;
+                    
+                    // Auto-scroll during streaming responses - scroll to new answer instead of bottom
+                    if (changedProperties.has('responses') && this.shouldAnimateResponse) {
+                        // When a new response is being streamed, scroll to show the top of it
+                        this.scrollToNewAnswer();
+                    } else if (changedProperties.has('chatHistory')) {
+                        // For chat history updates, scroll to bottom to show user messages
+                        this.scrollToBottom();
+                    }
                 });
             }
         }
@@ -1071,46 +1260,85 @@ export class AssistantView extends LitElement {
             // Clear all state classes first
             container.classList.remove('loading', 'streaming', 'updating');
             
-            // Show loading animation if waiting for response
-            if (this.isLoading && this.responses.length === 0) {
-                container.classList.add('loading');
-                container.innerHTML = `
-                    <div class="loading-animation">
-                        <span>Thinking</span>
-                        <div class="thinking-dots">
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                            <div class="dot"></div>
+            // Render chat history and current response
+            let chatContent = '';
+            
+            // Add chat history messages
+            this.chatHistory.forEach((message, index) => {
+                if (message.role === 'user') {
+                    chatContent += `
+                        <div class="chat-message user">
+                            <div class="message-role">You</div>
+                            <div class="message-content">${this.escapeHtml(message.content)}</div>
+                            <div class="message-timestamp">${this.formatTimestamp(message.timestamp)}</div>
                         </div>
+                    `;
+                } else if (message.role === 'assistant') {
+                    chatContent += `
+                        <div class="chat-message assistant">
+                            <div class="message-role">Assistant</div>
+                            <div class="message-content">${this.renderMarkdown(message.content)}</div>
+                            <div class="message-timestamp">${this.formatTimestamp(message.timestamp)}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Add current response if we have one and it's not already in chat history
+            const currentResponse = this.getCurrentResponse();
+            const lastMessage = this.chatHistory[this.chatHistory.length - 1];
+            const isCurrentResponseInHistory = lastMessage && 
+                lastMessage.role === 'assistant' && 
+                lastMessage.content === currentResponse;
+            
+            if (currentResponse && 
+                currentResponse !== 'What medical question do you have?' && 
+                !isCurrentResponseInHistory) {
+                console.log('Current response:', currentResponse);
+                
+                // Show streaming indicator if response is being updated
+                if (this.shouldAnimateResponse) {
+                    container.classList.add('streaming');
+                    // Remove streaming class after a delay to show completion
+                    clearTimeout(this._streamingTimeout);
+                    this._streamingTimeout = setTimeout(() => {
+                        container.classList.remove('streaming');
+                        this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
+                    }, 2000);
+                }
+                
+                chatContent += `
+                    <div class="chat-message assistant">
+                        <div class="message-role">Assistant</div>
+                        <div class="message-content">${this.renderMarkdown(currentResponse)}</div>
                     </div>
                 `;
-                return;
-            }
-            
-            const currentResponse = this.getCurrentResponse();
-            console.log('Current response:', currentResponse);
-            
-            // Show streaming indicator if response is being updated
-            if (this.shouldAnimateResponse) {
-                container.classList.add('streaming');
-                // Remove streaming class after a delay to show completion
-                clearTimeout(this._streamingTimeout);
-                this._streamingTimeout = setTimeout(() => {
-                    container.classList.remove('streaming');
-                    this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
-                }, 2000);
+            } else if (this.chatHistory.length === 0) {
+                // Show welcome message for new chat
+                chatContent = `
+                    <div class="chat-message assistant">
+                        <div class="message-role">Assistant</div>
+                        <div class="message-content">${this.renderMarkdown(currentResponse)}</div>
+                    </div>
+                `;
             }
             
             // Apply brief update indication for smooth transition
             container.classList.add('updating');
             
-            const renderedResponse = this.renderMarkdown(currentResponse);
-            console.log('Rendered response:', renderedResponse);
-            
             // Use requestAnimationFrame for smooth DOM update
             requestAnimationFrame(() => {
-                container.innerHTML = renderedResponse;
+                container.innerHTML = chatContent;
                 container.classList.remove('updating');
+                
+                // Auto-scroll based on content type
+                if (this.shouldAnimateResponse && currentResponse && currentResponse !== 'What medical question do you have?') {
+                    // For streaming responses, scroll to show the top of the answer
+                    this.scrollToNewAnswer();
+                } else {
+                    // For other updates, scroll to bottom
+                    this.scrollToBottom();
+                }
             });
             
         } else {
@@ -1165,6 +1393,18 @@ export class AssistantView extends LitElement {
                     <div class="tab-content">
                         <div class="response-content ${this.activeTab === 'response' ? 'active' : ''}">
                             <div class="response-container" id="responseContainer"></div>
+                            ${this.isLoading ? html`
+                                <div class="thinking-indicator">
+                                    <div class="loading-animation">
+                                        <span>Thinking</span>
+                                        <div class="thinking-dots">
+                                            <div class="dot"></div>
+                                            <div class="dot"></div>
+                                            <div class="dot"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
                         </div>
                         
                         <div class="sources-content ${this.activeTab === 'sources' ? 'active' : ''}">
@@ -1209,68 +1449,12 @@ export class AssistantView extends LitElement {
             </div>
 
             <div class="text-input-container">
-                <button class="nav-button" @click=${this.navigateToPreviousResponse} ?disabled=${this.currentResponseIndex <= 0}>
-                    <?xml version="1.0" encoding="UTF-8"?><svg
-                        width="24px"
-                        height="24px"
-                        stroke-width="1.7"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        color="#ffffff"
-                    >
-                        <path d="M15 6L9 12L15 18" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </button>
-
-                ${this.responses.length > 0 ? html` <span class="response-counter">${responseCounter}</span> ` : ''}
-
-                <button
-                    class="save-button ${isSaved ? 'saved' : ''}"
-                    @click=${this.saveCurrentResponse}
-                    title="${isSaved ? 'Response saved' : 'Save this response'}"
-                >
-                    <?xml version="1.0" encoding="UTF-8"?><svg
-                        width="24px"
-                        height="24px"
-                        stroke-width="1.7"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M5 20V5C5 3.89543 5.89543 3 7 3H16.1716C16.702 3 17.2107 3.21071 17.5858 3.58579L19.4142 5.41421C19.7893 5.78929 20 6.29799 20 6.82843V20C20 21.1046 19.1046 22 18 22H7C5.89543 22 5 21 5 20Z"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        ></path>
-                        <path d="M15 22V13H9V22" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M9 3V8H15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </button>
-
-                
                 <div class="input-wrapper">
                     <input type="text" id="textInput" placeholder="Ask a medical question..." @keydown=${this.handleTextKeydown} />
                 </div>
                 
                 <button class="send-button" @click=${this.sendTextMessage}>
                     Send
-                </button>
-
-                <button class="nav-button" @click=${this.navigateToNextResponse} ?disabled=${this.currentResponseIndex >= this.responses.length - 1}>
-                    <?xml version="1.0" encoding="UTF-8"?><svg
-                        width="24px"
-                        height="24px"
-                        stroke-width="1.7"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        color="#ffffff"
-                    >
-                        <path d="M9 6L15 12L9 18" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
                 </button>
             </div>
         `;
