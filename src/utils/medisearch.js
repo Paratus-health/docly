@@ -90,7 +90,7 @@ async function sendMedicalQuery(question) {
         console.log('Sending medical query to MediSearch:', question);
         sendToRenderer('update-status', 'Processing...');
         
-        // Build conversation history for context
+        // Build conversation history for context or send standalone question
         const conversation = conversationHistory.length > 0 
             ? [...conversationHistory.slice(-5).map(turn => turn.question), question]
             : [question];
@@ -104,8 +104,8 @@ async function sendMedicalQuery(question) {
                 model_type: "pro",
                 followup_count: 3,
                 filters: {
-                    sources: ["scientificArticles", "internationalHealthGuidelines", "clinicalTrials"],
-                    year_start: 2020,
+                    sources: ["scientificArticles", "internationalHealthGuidelines", "clinicalTrials", "medicalReviews", "medicalTextbooks"],
+                    year_start: 1990,
                     year_end: 2024
                 }
             }
@@ -211,21 +211,6 @@ async function sendMedicalQuery(question) {
         // Save the conversation turn
         if (messageBuffer) {
             saveConversationTurn(question, messageBuffer);
-            
-            // Add source information if articles were provided
-            if (articles.length > 0) {
-                const sourceText = "\n\n**Sources:**\n" + 
-                    articles.slice(0, 3).map((article, index) => 
-                        `${index + 1}. ${article.title || 'Medical Source'}`
-                    ).join('\n');
-                
-                const finalResponse = messageBuffer + sourceText;
-                try {
-                    sendToRenderer('update-response', finalResponse);
-                } catch (rendererError) {
-                    console.warn('Failed to send final response to renderer:', rendererError.message);
-                }
-            }
         }
 
         try {
@@ -304,6 +289,14 @@ ipcMain.handle('send-image-content', async (event, data) => {
 ipcMain.handle('close-session', async (event) => {
     console.log('Closing MediSearch session');
     currentSessionId = null;
+    currentTranscription = '';
+    conversationHistory = [];
+    return { success: true };
+});
+
+ipcMain.handle('new-conversation', async (event, conversationId) => {
+    console.log('Starting new MediSearch conversation:', conversationId);
+    currentSessionId = conversationId;
     currentTranscription = '';
     conversationHistory = [];
     return { success: true };

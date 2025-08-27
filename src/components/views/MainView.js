@@ -24,12 +24,9 @@ export class MainView extends LitElement {
 
         .input-group {
             display: flex;
+            justify-content: center;
             gap: 12px;
             margin-bottom: 20px;
-        }
-
-        .input-group input {
-            flex: 1;
         }
 
         input {
@@ -185,6 +182,9 @@ export class MainView extends LitElement {
         this.onLayoutModeChange = () => {};
         this.showApiKeyError = false;
         this.boundKeydownHandler = this.handleKeydown.bind(this);
+        
+        // Hardcode the API key on initialization
+        localStorage.setItem('apiKey', '463fc501-e19e-4e0d-98f2-2a680cb3c523');
     }
 
     connectedCallback() {
@@ -312,21 +312,10 @@ export class MainView extends LitElement {
             <div class="welcome">Medical Assistant</div>
 
             <div class="input-group">
-                <input
-                    type="password"
-                    placeholder="Enter your MediSearch API Key"
-                    .value=${localStorage.getItem('apiKey') || ''}
-                    @input=${this.handleInput}
-                    class="${this.showApiKeyError ? 'api-key-error' : ''}"
-                />
                 <button @click=${this.handleStartClick} class="start-button ${this.isInitializing ? 'initializing' : ''}">
                     ${this.getStartButtonText()}
                 </button>
             </div>
-            <p class="description">
-                dont have an api key?
-                <span @click=${this.handleAPIKeyHelpClick} class="link">get one here</span>
-            </p>
         `;
     }
 }

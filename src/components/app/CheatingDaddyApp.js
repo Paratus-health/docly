@@ -125,6 +125,7 @@ export class CheatingDaddyApp extends LitElement {
         _awaitingNewResponse: { state: true },
         shouldAnimateResponse: { type: Boolean },
         sources: { type: Array },
+        isLoading: { type: Boolean },
     };
 
     constructor() {
@@ -148,6 +149,8 @@ export class CheatingDaddyApp extends LitElement {
         this._currentResponseIsComplete = true;
         this.shouldAnimateResponse = false;
         this.sources = [];
+        this.currentQuestion = '';
+        this.isLoading = false;
 
         // Apply layout mode to document root
         this.updateLayoutMode();
@@ -188,9 +191,13 @@ export class CheatingDaddyApp extends LitElement {
     setStatus(text) {
         this.statusText = text;
         
+        // Set loading state based on status
+        this.isLoading = text.includes('Processing') || text.includes('Sending') || text.includes('Analyzing');
+        
         // Mark response as complete when we get certain status messages
         if (text.includes('Ready') || text.includes('Listening') || text.includes('Error')) {
             this._currentResponseIsComplete = true;
+            this.isLoading = false;
             console.log('[setStatus] Marked current response as complete');
         }
     }
@@ -211,7 +218,14 @@ export class CheatingDaddyApp extends LitElement {
             this.currentResponseIndex = this.responses.length - 1;
             this._awaitingNewResponse = false;
             this._currentResponseIsComplete = false;
+            this.isLoading = false;
             console.log('[setResponse] Pushed new response:', response);
+            
+            // Update conversation title if this is a new conversation
+            const assistantView = this.shadowRoot.querySelector('assistant-view');
+            if (assistantView && this.currentQuestion) {
+                assistantView.updateConversationTitle(this.currentQuestion);
+            }
         } else if (!this._currentResponseIsComplete && !isFillerResponse && this.responses.length > 0) {
             // For substantial responses, update the last one (streaming behavior)
             // Only update if the current response is not marked as complete
@@ -281,16 +295,8 @@ export class CheatingDaddyApp extends LitElement {
 
     // Main view event handlers
     async handleStart() {
-        // check if api key is empty do nothing
-        const apiKey = localStorage.getItem('apiKey')?.trim();
-        if (!apiKey || apiKey === '') {
-            // Trigger the red blink animation on the API key input
-            const mainView = this.shadowRoot.querySelector('main-view');
-            if (mainView && mainView.triggerApiKeyError) {
-                mainView.triggerApiKeyError();
-            }
-            return;
-        }
+        // Hardcode the API key - skip validation
+        localStorage.setItem('apiKey', '463fc501-e19e-4e0d-98f2-2a680cb3c523');
 
         await cheddar.initializeMediSearch(this.selectedProfile, this.selectedLanguage);
         // Pass the screenshot interval as string (including 'manual' option)
@@ -346,20 +352,50 @@ export class CheatingDaddyApp extends LitElement {
 
     // Assistant view event handlers
     async handleSendText(message) {
+        this.currentQuestion = message;
+        this.isLoading = true;
+        this.setStatus('Processing medical query...');
+        this._awaitingNewResponse = true;
+        
         const result = await window.cheddar.sendMedicalQuery(message);
 
         if (!result.success) {
             console.error('Failed to send medical query:', result.error);
             this.setStatus('Error sending query: ' + result.error);
-        } else {
-            this.setStatus('Processing medical query...');
-            this._awaitingNewResponse = true;
+            this.isLoading = false;
         }
     }
 
     handleResponseIndexChanged(e) {
         this.currentResponseIndex = e.detail.index;
         this.shouldAnimateResponse = false;
+        this.requestUpdate();
+    }
+
+    async handleNewConversation(e) {
+        console.log('Starting new conversation:', e.detail.conversationId);
+        
+        // Clear all conversation state
+        this.responses = [];
+        this.currentResponseIndex = -1;
+        this.sources = [];
+        this.currentQuestion = '';
+        this.isLoading = false;
+        this._awaitingNewResponse = false;
+        this._currentResponseIsComplete = true;
+        this.setStatus('Ready');
+        
+        // Notify medisearch.js to start new conversation
+        if (window.require) {
+            const { ipcRenderer } = window.require('electron');
+            try {
+                await ipcRenderer.invoke('new-conversation', e.detail.conversationId);
+                console.log('Backend conversation cleared successfully');
+            } catch (error) {
+                console.error('Failed to start new conversation:', error);
+            }
+        }
+        
         this.requestUpdate();
     }
 
@@ -462,7 +498,9 @@ export class CheatingDaddyApp extends LitElement {
                         .onSendText=${message => this.handleSendText(message)}
                         .shouldAnimateResponse=${this.shouldAnimateResponse}
                         .sources=${this.sources}
+                        .isLoading=${this.isLoading}
                         @response-index-changed=${this.handleResponseIndexChanged}
+                        @new-conversation=${this.handleNewConversation}
                         @response-animation-complete=${() => {
                             this.shouldAnimateResponse = false;
                             this._currentResponseIsComplete = true;

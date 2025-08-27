@@ -11,146 +11,174 @@ export class AssistantView extends LitElement {
         .content-wrapper {
             display: flex;
             flex-direction: column;
-            height: 100%;
-            gap: 12px;
+            height: calc(100% - 70px);
         }
 
-        .response-section {
-            flex: 1;
-            min-height: 0;
-        }
-
-        .sources-carousel {
-            height: 140px;
+        .tab-container {
             background: var(--main-content-background);
             backdrop-filter: var(--main-content-backdrop-filter);
             -webkit-backdrop-filter: var(--main-content-backdrop-filter);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px;
-            display: none;
+            display: flex;
             flex-direction: column;
+            height: 100%;
+            overflow: hidden;
         }
 
-        .sources-carousel.has-sources {
+        .tab-header {
             display: flex;
-        }
-
-        .sources-header {
-            display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border-color);
+            padding: 4px;
+            gap: 4px;
         }
 
-        .sources-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-color);
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+        }
+
+        .chat-controls {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .sources-count {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 8px;
-            border-radius: 12px;
+        .conversation-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
         }
 
-        .carousel-container {
-            position: relative;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .carousel-track {
+        .new-chat-button {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
             display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            scroll-behavior: smooth;
+            align-items: center;
+            gap: 4px;
         }
 
-        .carousel-track::-webkit-scrollbar {
-            height: 4px;
+        .new-chat-button:hover {
+            background: linear-gradient(135deg, #0056CC, #4940B8);
+            transform: translateY(-1px);
         }
 
-        .carousel-track::-webkit-scrollbar-track {
+        .tab-button {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-button.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .tab-button:hover:not(.active) {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 2px;
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        .carousel-track::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
         }
 
-        .carousel-track::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .response-content {
+            display: none;
         }
 
-        .source-card {
-            min-width: 280px;
-            max-width: 280px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-            padding: 12px;
+        .response-content.active {
+            display: block;
+        }
+
+        .sources-content {
+            display: none;
+        }
+
+        .sources-content.active {
+            display: block;
+        }
+
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .source-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .source-card::before {
+        .source-item::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
+            height: 3px;
             background: linear-gradient(90deg, #007AFF, #5856D6);
             transform: translateX(-100%);
             transition: transform 0.3s ease;
         }
 
-        .source-card:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.25);
+        .source-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .source-card:hover::before {
+        .source-item:hover::before {
             transform: translateX(0);
         }
 
-        .source-card-title {
-            font-size: 13px;
+        .source-title {
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-color);
-            line-height: 1.3;
-            margin-bottom: 6px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            line-height: 1.4;
+            margin-bottom: 8px;
         }
 
-        .source-card-meta {
-            font-size: 11px;
+        .source-meta {
+            font-size: 12px;
             color: rgba(255, 255, 255, 0.7);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
-        .source-card-journal {
+        .source-journal {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -158,20 +186,90 @@ export class AssistantView extends LitElement {
             margin-right: 8px;
         }
 
-        .source-card-year {
+        .source-year {
             font-weight: 600;
             color: #007AFF;
             font-size: 12px;
         }
 
-        .source-card-authors {
-            font-size: 10px;
+        .source-authors {
+            font-size: 11px;
             color: rgba(255, 255, 255, 0.5);
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .system-prompt-content {
+            display: none;
+        }
+
+        .system-prompt-content.active {
+            display: block;
+        }
+
+        .prompt-editor {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .prompt-editor h3 {
+            color: var(--text-color);
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .prompt-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 16px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .prompt-button {
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .prompt-button:hover {
+            background: linear-gradient(135deg, #0056CC, #4940B8);
+        }
+
+        .prompt-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .prompt-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
 
@@ -181,8 +279,7 @@ export class AssistantView extends LitElement {
         }
 
         .response-container {
-            height: 100%;
-            overflow-y: auto;
+            height: auto;
             border-radius: 10px;
             font-size: var(--response-font-size, 16px);
             line-height: 1.7;
@@ -226,6 +323,60 @@ export class AssistantView extends LitElement {
         /* Restore default cursor for interactive elements */
         .response-container a {
             cursor: pointer;
+        }
+
+        /* Loading animation for waiting responses */
+        .response-container.loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .loading-animation {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-color);
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .thinking-dots .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-color);
+            animation: thinking 1.4s infinite both;
+        }
+
+        .thinking-dots .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .thinking-dots .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .thinking-dots .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes thinking {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
         }
 
         /* Smooth, epilepsy-friendly streaming animation */
@@ -592,6 +743,11 @@ export class AssistantView extends LitElement {
         shouldAnimateResponse: { type: Boolean },
         savedResponses: { type: Array },
         sources: { type: Array },
+        activeTab: { type: String },
+        systemPrompt: { type: String },
+        conversationId: { type: String },
+        conversationTitle: { type: String },
+        isLoading: { type: Boolean },
     };
 
     constructor() {
@@ -603,6 +759,11 @@ export class AssistantView extends LitElement {
         this._lastAnimatedWordCount = 0;
         this._updatePending = false;
         this.sources = [];
+        this.activeTab = 'response';
+        this.systemPrompt = localStorage.getItem('systemPrompt') || 'You are a helpful medical AI assistant. Provide accurate, evidence-based medical information while always recommending consulting healthcare professionals for personal medical advice.';
+        this.conversationId = Date.now().toString();
+        this.conversationTitle = 'New Chat';
+        this.isLoading = false;
         // Load saved responses from localStorage
         try {
             this.savedResponses = JSON.parse(localStorage.getItem('savedResponses') || '[]');
@@ -777,6 +938,8 @@ export class AssistantView extends LitElement {
         if (textInput && textInput.value.trim()) {
             const message = textInput.value.trim();
             textInput.value = ''; // Clear input
+            this.isLoading = true;
+            this.requestUpdate();
             await this.onSendText(message);
         }
     }
@@ -785,6 +948,62 @@ export class AssistantView extends LitElement {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             this.handleSendText();
+        }
+    }
+
+    sendTextMessage() {
+        this.handleSendText();
+    }
+
+    switchTab(tabName) {
+        this.activeTab = tabName;
+        this.requestUpdate();
+    }
+
+    saveSystemPrompt() {
+        const textarea = this.shadowRoot.querySelector('.prompt-textarea');
+        if (textarea) {
+            this.systemPrompt = textarea.value;
+            localStorage.setItem('systemPrompt', this.systemPrompt);
+            // You could add logic here to update the actual system prompt in the backend
+            console.log('System prompt saved:', this.systemPrompt);
+        }
+    }
+
+    resetSystemPrompt() {
+        const defaultPrompt = 'You are a helpful medical AI assistant. Provide accurate, evidence-based medical information while always recommending consulting healthcare professionals for personal medical advice.';
+        this.systemPrompt = defaultPrompt;
+        localStorage.setItem('systemPrompt', this.systemPrompt);
+        const textarea = this.shadowRoot.querySelector('.prompt-textarea');
+        if (textarea) {
+            textarea.value = this.systemPrompt;
+        }
+        this.requestUpdate();
+    }
+
+    newChat() {
+        // Create new conversation
+        this.conversationId = Date.now().toString();
+        this.conversationTitle = 'New Chat';
+        this.activeTab = 'response';
+        
+        // Notify parent component to start new conversation
+        // Parent will handle clearing responses, sources, and backend state
+        this.dispatchEvent(new CustomEvent('new-conversation', {
+            detail: { conversationId: this.conversationId },
+            bubbles: true,
+            composed: true
+        }));
+        
+        this.requestUpdate();
+    }
+
+    updateConversationTitle(question) {
+        // Update title to first few words of the question
+        if (this.conversationTitle === 'New Chat' && question) {
+            const words = question.split(' ').slice(0, 4).join(' ');
+            this.conversationTitle = words.length > 30 ? words.substring(0, 27) + '...' : words;
+            this.requestUpdate();
         }
     }
 
@@ -826,9 +1045,13 @@ export class AssistantView extends LitElement {
 
     updated(changedProperties) {
         super.updated(changedProperties);
-        if (changedProperties.has('responses') || changedProperties.has('currentResponseIndex')) {
+        if (changedProperties.has('responses') || changedProperties.has('currentResponseIndex') || changedProperties.has('isLoading')) {
             if (changedProperties.has('currentResponseIndex')) {
                 this._lastAnimatedWordCount = 0;
+            }
+            // Clear loading state when responses change
+            if (changedProperties.has('responses') && this.responses.length > 0) {
+                this.isLoading = false;
             }
             // Throttle updates for smoother streaming
             if (!this._updatePending) {
@@ -845,6 +1068,25 @@ export class AssistantView extends LitElement {
         console.log('updateResponseContent called');
         const container = this.shadowRoot.querySelector('#responseContainer');
         if (container) {
+            // Clear all state classes first
+            container.classList.remove('loading', 'streaming', 'updating');
+            
+            // Show loading animation if waiting for response
+            if (this.isLoading && this.responses.length === 0) {
+                container.classList.add('loading');
+                container.innerHTML = `
+                    <div class="loading-animation">
+                        <span>Thinking</span>
+                        <div class="thinking-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
             const currentResponse = this.getCurrentResponse();
             console.log('Current response:', currentResponse);
             
@@ -857,8 +1099,6 @@ export class AssistantView extends LitElement {
                     container.classList.remove('streaming');
                     this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
                 }, 2000);
-            } else {
-                container.classList.remove('streaming');
             }
             
             // Apply brief update indication for smooth transition
@@ -892,35 +1132,77 @@ export class AssistantView extends LitElement {
 
         return html`
             <div class="content-wrapper">
-                <div class="response-section">
-                    <div class="response-container" id="responseContainer"></div>
-                </div>
-                
-                <div class="sources-carousel ${this.sources && this.sources.length > 0 ? 'has-sources' : ''}">
-                    <div class="sources-header">
-                        <div class="sources-title">
-                            📚 Sources
-                            <div class="sources-count">${this.sources ? this.sources.length : 0}</div>
+                <div class="tab-container">
+                    <div class="tab-header">
+                        <div class="tab-nav">
+                            <button 
+                                class="tab-button ${this.activeTab === 'response' ? 'active' : ''}"
+                                @click=${() => this.switchTab('response')}
+                            >
+                                💬 Response
+                            </button>
+                            <button 
+                                class="tab-button ${this.activeTab === 'sources' ? 'active' : ''}"
+                                @click=${() => this.switchTab('sources')}
+                            >
+                                📚 Sources ${this.sources?.length ? `(${this.sources.length})` : ''}
+                            </button>
+                            <button 
+                                class="tab-button ${this.activeTab === 'system-prompt' ? 'active' : ''}"
+                                @click=${() => this.switchTab('system-prompt')}
+                            >
+                                ⚙️ System Prompt
+                            </button>
+                        </div>
+                        <div class="chat-controls">
+                            <span class="conversation-title">${this.conversationTitle}</span>
+                            <button class="new-chat-button" @click=${this.newChat}>
+                                ✨ New Chat
+                            </button>
                         </div>
                     </div>
-                    <div class="carousel-container">
-                        <div class="carousel-track">
+                    
+                    <div class="tab-content">
+                        <div class="response-content ${this.activeTab === 'response' ? 'active' : ''}">
+                            <div class="response-container" id="responseContainer"></div>
+                        </div>
+                        
+                        <div class="sources-content ${this.activeTab === 'sources' ? 'active' : ''}">
                             ${this.sources && this.sources.length > 0 
-                                ? this.sources.map(source => html`
-                                    <div class="source-card" @click=${() => this.openSource(source.url)}>
-                                        <div class="source-card-title">${source.title}</div>
-                                        <div class="source-card-meta">
-                                            <div class="source-card-journal">${source.journal || 'Research Article'}</div>
-                                            <div class="source-card-year">${source.year || 'N/A'}</div>
-                                        </div>
-                                        ${source.authors && source.authors.length > 0 
-                                            ? html`<div class="source-card-authors">${Array.isArray(source.authors) ? source.authors.slice(0, 3).join(', ') : source.authors}</div>`
-                                            : ''
-                                        }
+                                ? html`
+                                    <div class="sources-grid">
+                                        ${this.sources.map(source => html`
+                                            <div class="source-item" @click=${() => this.openSource(source.url)}>
+                                                <div class="source-title">${source.title}</div>
+                                                <div class="source-meta">
+                                                    <div class="source-journal">${source.journal || 'Research Article'}</div>
+                                                    <div class="source-year">${source.year || 'N/A'}</div>
+                                                </div>
+                                                ${source.authors && source.authors.length > 0 
+                                                    ? html`<div class="source-authors">${Array.isArray(source.authors) ? source.authors.slice(0, 3).join(', ') + (source.authors.length > 3 ? ' et al.' : '') : source.authors}</div>`
+                                                    : ''
+                                                }
+                                            </div>
+                                        `)}
                                     </div>
-                                `)
-                                : html`<div style="color: rgba(255,255,255,0.5); font-size: 14px; text-align: center; padding: 20px;">No sources available for this response</div>`
+                                `
+                                : html`<div style="color: rgba(255,255,255,0.5); font-size: 14px; text-align: center; padding: 40px;">No sources available for this response</div>`
                             }
+                        </div>
+                        
+                        <div class="system-prompt-content ${this.activeTab === 'system-prompt' ? 'active' : ''}">
+                            <div class="prompt-editor">
+                                <h3>System Prompt</h3>
+                                <textarea 
+                                    class="prompt-textarea" 
+                                    .value=${this.systemPrompt}
+                                    placeholder="Enter your system prompt here..."
+                                ></textarea>
+                                <div class="prompt-actions">
+                                    <button class="prompt-button" @click=${this.saveSystemPrompt}>Save Changes</button>
+                                    <button class="prompt-button secondary" @click=${this.resetSystemPrompt}>Reset to Default</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -968,7 +1250,14 @@ export class AssistantView extends LitElement {
                     </svg>
                 </button>
 
-                <input type="text" id="textInput" placeholder="Type a message to the AI..." @keydown=${this.handleTextKeydown} />
+                
+                <div class="input-wrapper">
+                    <input type="text" id="textInput" placeholder="Ask a medical question..." @keydown=${this.handleTextKeydown} />
+                </div>
+                
+                <button class="send-button" @click=${this.sendTextMessage}>
+                    Send
+                </button>
 
                 <button class="nav-button" @click=${this.navigateToNextResponse} ?disabled=${this.currentResponseIndex >= this.responses.length - 1}>
                     <?xml version="1.0" encoding="UTF-8"?><svg
