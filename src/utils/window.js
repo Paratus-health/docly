@@ -46,8 +46,8 @@ function ensureDataDirectories() {
 
 function createWindow(sendToRenderer, geminiSessionRef, randomNames = null) {
     // Get layout preference (default to 'normal')
-    let windowWidth = 1100;
-    let windowHeight = 800;
+    let windowWidth = 1250;
+    let windowHeight = 900;
 
     const mainWindow = new BrowserWindow({
         width: windowWidth,
@@ -117,6 +117,28 @@ function createWindow(sendToRenderer, geminiSessionRef, randomNames = null) {
         if (mainWindow && !mainWindow.isDestroyed()) {
             console.log('Window lost focus - hiding window');
             mainWindow.hide();
+        }
+    });
+
+    // Add comprehensive cleanup to prevent errors on close
+    mainWindow.on('close', () => {
+        try {
+            // Unregister all global shortcuts to prevent errors
+            globalShortcut.unregisterAll();
+        } catch (e) {
+            // Ignore errors during cleanup
+        }
+    });
+    
+    mainWindow.on('closed', () => {
+        try {
+            // Clear any remaining timers or references
+            if (resizeAnimation) {
+                clearInterval(resizeAnimation);
+                resizeAnimation = null;
+            }
+        } catch (e) {
+            // Ignore errors during cleanup
         }
     });
 
@@ -495,27 +517,27 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
             let targetWidth, targetHeight;
 
             // Determine base size from layout mode
-            const baseWidth = layoutMode === 'compact' ? 700 : 900;
-            const baseHeight = layoutMode === 'compact' ? 500 : 600;
+            const baseWidth = layoutMode === 'compact' ? 800 : 1000;
+            const baseHeight = layoutMode === 'compact' ? 600 : 700;
 
             // Adjust height based on view
             switch (viewName) {
                 case 'customize':
                 case 'settings':
                     targetWidth = baseWidth;
-                    targetHeight = layoutMode === 'compact' ? 700 : 800;
+                    targetHeight = layoutMode === 'compact' ? 800 : 900;
                     break;
                 case 'help':
                     targetWidth = baseWidth;
-                    targetHeight = layoutMode === 'compact' ? 650 : 750;
+                    targetHeight = layoutMode === 'compact' ? 750 : 850;
                     break;
                 case 'history':
                     targetWidth = baseWidth;
-                    targetHeight = layoutMode === 'compact' ? 650 : 750;
+                    targetHeight = layoutMode === 'compact' ? 750 : 850;
                     break;
                 case 'advanced':
                     targetWidth = baseWidth;
-                    targetHeight = layoutMode === 'compact' ? 600 : 700;
+                    targetHeight = layoutMode === 'compact' ? 700 : 800;
                     break;
                 case 'main':
                 case 'assistant':

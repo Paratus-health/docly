@@ -1,36 +1,83 @@
+// Only block specific JavaScript errors that cause dialogs
+process.removeAllListeners('uncaughtException');
+process.removeAllListeners('unhandledRejection');
+
+process.on('uncaughtException', (error) => {
+    // Only block specific error types, log others normally
+    if (error.code === 'EPIPE' || 
+        error.message?.includes('EPIPE') || 
+        error.message?.includes('Object has been destroyed') ||
+        error.message?.includes('write after end') ||
+        error.message?.includes('afterWriteDispatched') ||
+        error.message?.includes('Socket._write')) {
+        return; // Silently ignore these specific errors
+    }
+    // Let other errors through normally
+    console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    // Only block specific rejection types
+    if (reason && (reason.code === 'EPIPE' || 
+                   reason.message?.includes('EPIPE') ||
+                   reason.message?.includes('Object has been destroyed'))) {
+        return; // Silently ignore these specific rejections
+    }
+    // Let other rejections through normally
+    console.error('Unhandled Rejection:', reason);
+});
+
 if (require('electron-squirrel-startup')) {
     process.exit(0);
 }
 
-const { app, BrowserWindow, shell, ipcMain, dialog } = require('electron');
+// Get Electron modules but override dialog immediately
+const electron = require('electron');
+const { app, BrowserWindow, shell, ipcMain } = electron;
+
+// Override dialog methods BEFORE any other code can use them
+const dialog = electron.dialog;
+
+// Store original for debugging
+const originalShowErrorBox = dialog.showErrorBox;
+
+// Only block JavaScript error dialogs, allow other dialogs to work normally
+dialog.showErrorBox = function(title, content) {
+    // Only block JavaScript error dialogs
+    if (title && title.includes('JavaScript error') ||
+        content && (content.includes('Object has been destroyed') ||
+                   content.includes('EPIPE') ||
+                   content.includes('afterWriteDispatched') ||
+                   content.includes('TypeError') ||
+                   content.includes('Function.<anonymous>'))) {
+        return; // Block these specific error dialogs
+    }
+    // Allow other error dialogs to show normally
+    return originalShowErrorBox.call(dialog, title, content);
+};
+
+// Note: app.setUncaughtExceptionCaptureCallback doesn't exist in Electron
+// Error handling is done via process.on() handlers above
 
 // Disable all error dialogs at the app level before anything else loads
 app.commandLine.appendSwitch('disable-dev-shm-usage');
 app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
+app.commandLine.appendSwitch('disable-gpu-sandbox');
+app.commandLine.appendSwitch('no-sandbox');
 
-// Override dialog.showErrorBox globally before any other code runs
-const originalShowErrorBox = dialog.showErrorBox;
-dialog.showErrorBox = (title, content) => {
-    // Completely suppress all error dialogs containing these patterns
-    if (content && (
-        content.includes('EPIPE') || 
-        content.includes('write after end') ||
-        content.includes('afterWriteDispatched') ||
-        content.includes('writeGeneric') ||
-        content.includes('Object has been destroyed') ||
-        content.includes('Socket._write') ||
-        content.includes('destroyed') ||
-        content.includes('TypeError') ||
-        content.includes('Function.<anonymous>')
-    )) {
-        return; // Silently ignore - no dialog shown
+// Disable crash reporter if it exists
+try {
+    const { crashReporter } = electron;
+    if (crashReporter && typeof crashReporter.start === 'function') {
+        // Override start method to prevent crash reporting
+        crashReporter.start = () => {
+            // Do nothing - prevent crash reporter from starting
+        };
     }
-    
-    // Only show critical errors
-    if (content && (content.includes('FATAL') || content.includes('CRITICAL'))) {
-        originalShowErrorBox.call(dialog, title, content);
-    }
-};
+} catch (e) {
+    // Crash reporter might not exist in this version
+}
 const { createWindow, updateGlobalShortcuts } = require('./utils/window');
 const { stopMacOSAudioCapture, sendToRenderer } = require('./utils/gemini');
 require('./utils/medisearch'); // Initialize MediSearch handlers
@@ -124,26 +171,63 @@ const randomNames = initializeRandomProcessNames();
 
 function createMainWindow() {
     mainWindow = createWindow(sendToRenderer, geminiSessionRef, randomNames);
+    
+    // Add error handlers to the window to prevent error dialogs
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.on('unresponsive', () => {
+            // Silently ignore unresponsive window
+        });
+        
+        mainWindow.on('closed', () => {
+            mainWindow = null;
+        });
+        
+        // Suppress renderer process crashes
+        mainWindow.webContents.on('crashed', (event) => {
+            event.preventDefault();
+        });
+        
+        mainWindow.webContents.on('render-process-gone', (event, details) => {
+            // Silently ignore renderer process crashes
+        });
+    }
+    
     return mainWindow;
 }
 
 app.whenReady().then(async () => {
-    // Apply anti-analysis measures with random delay
-    await applyAntiAnalysisMeasures();
+    try {
+        // Apply anti-analysis measures with random delay
+        await applyAntiAnalysisMeasures();
 
-    createMainWindow();
-    setupGeneralIpcHandlers();
+        createMainWindow();
+        setupGeneralIpcHandlers();
+    } catch (error) {
+        logError('app.whenReady', error);
+        // Continue anyway - don't show error dialog
+    }
+}).catch(error => {
+    logError('app.whenReady-promise', error);
+    // Continue anyway - don't show error dialog
 });
 
 app.on('window-all-closed', () => {
-    stopMacOSAudioCapture();
+    try {
+        stopMacOSAudioCapture();
+    } catch (e) {
+        // Ignore errors during shutdown
+    }
     if (process.platform !== 'darwin') {
         app.quit();
     }
 });
 
 app.on('before-quit', () => {
-    stopMacOSAudioCapture();
+    try {
+        stopMacOSAudioCapture();
+    } catch (e) {
+        // Ignore errors during shutdown
+    }
 });
 
 app.on('activate', () => {
