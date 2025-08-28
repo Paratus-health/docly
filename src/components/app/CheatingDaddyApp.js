@@ -364,6 +364,7 @@ export class CheatingDaddyApp extends LitElement {
         this.isLoading = true;
         this.setStatus('Processing medical query...');
         this._awaitingNewResponse = true;
+        this._currentResponseIsComplete = true; // Mark previous response as complete
         
         const result = await window.cheddar.sendMedicalQuery(message);
 
@@ -371,6 +372,7 @@ export class CheatingDaddyApp extends LitElement {
             console.error('Failed to send medical query:', result.error);
             this.setStatus('Error sending query: ' + result.error);
             this.isLoading = false;
+            this._awaitingNewResponse = false;
         }
     }
 
@@ -537,6 +539,10 @@ export class CheatingDaddyApp extends LitElement {
                                         timestamp: new Date()
                                     }];
                                     console.log('[response-complete] Added to chat history:', currentResponse.substring(0, 50) + '...');
+                                    
+                                    // Clear current response from responses array since it's now in chat history
+                                    this.responses = [];
+                                    this.currentResponseIndex = -1;
                                 } else {
                                     console.log('[response-complete] Skipping duplicate response');
                                 }

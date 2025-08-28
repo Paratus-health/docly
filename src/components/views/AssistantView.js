@@ -930,6 +930,10 @@ export class AssistantView extends LitElement {
                     sanitize: false, // We trust the AI responses
                 });
                 let rendered = window.marked.parse(content);
+                
+                // Make citations clickable
+                rendered = this.makeCitationsClickable(rendered);
+                
                 return rendered;
             } catch (error) {
                 console.warn('Error parsing markdown:', error);
@@ -937,7 +941,28 @@ export class AssistantView extends LitElement {
             }
         }
         console.log('Marked not available, using plain text formatting');
-        return this.formatPlainText(content);
+        return this.makeCitationsClickable(this.formatPlainText(content));
+    }
+
+    makeCitationsClickable(content) {
+        // Replace citation patterns like [1], [2], [3, 4] with clickable links
+        return content.replace(/\[(\d+(?:,\s*\d+)*)\]/g, (match, numbers) => {
+            const citationNums = numbers.split(',').map(n => n.trim());
+            const links = citationNums.map(num => {
+                const sourceIndex = parseInt(num) - 1; // Convert to 0-based index
+                const isValidSource = this.sources && sourceIndex >= 0 && sourceIndex < this.sources.length;
+                const style = 'color: rgb(59, 130, 246); text-decoration: none; cursor: pointer; padding: 1px 3px; border-radius: 3px; background: rgba(59, 130, 246, 0.1); font-weight: 500;';
+                const hoverStyle = 'background: rgba(59, 130, 246, 0.2);';
+                
+                if (isValidSource) {
+                    return `<span class="citation-link" data-source-index="${sourceIndex}" style="${style}" onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'" onclick="this.getRootNode().host.openSourceByIndex(${sourceIndex})">${num}</span>`;
+                } else {
+                    return `<span style="${style.replace('cursor: pointer', 'cursor: default')}; opacity: 0.5;">${num}</span>`;
+                }
+            });
+            
+            return `[${links.join(', ')}]`;
+        });
     }
 
     formatPlainText(content) {
@@ -1311,26 +1336,31 @@ export class AssistantView extends LitElement {
                 }
             });
             
-            // Handle current streaming response
+            // Handle current streaming response (only if actively streaming and not in history)
             const currentResponse = this.getCurrentResponse();
             const lastMessage = this.chatHistory[this.chatHistory.length - 1];
+            
+            // Only show current response if:
+            // 1. We have a response
+            // 2. It's not the welcome message
+            // 3. It's not already in chat history (avoid duplication)
+            // 4. We're actively streaming (shouldAnimateResponse is true)
             const shouldShowCurrentResponse = currentResponse && 
                 currentResponse !== 'What medical question do you have?' &&
-                (!lastMessage || lastMessage.role !== 'assistant' || lastMessage.content !== currentResponse);
+                this.shouldAnimateResponse &&
+                (!lastMessage || lastMessage.role !== 'assistant' || lastMessage.content.trim() !== currentResponse.trim());
                 
             if (shouldShowCurrentResponse) {
-                console.log('Current response:', currentResponse);
+                console.log('Showing streaming response:', currentResponse.substring(0, 50) + '...');
                 
-                // Show streaming indicator if response is being updated
-                if (this.shouldAnimateResponse) {
-                    container.classList.add('streaming');
-                    // Remove streaming class after a delay to show completion
-                    clearTimeout(this._streamingTimeout);
-                    this._streamingTimeout = setTimeout(() => {
-                        container.classList.remove('streaming');
-                        this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
-                    }, 2000);
-                }
+                // Show streaming indicator
+                container.classList.add('streaming');
+                // Remove streaming class after a delay to show completion
+                clearTimeout(this._streamingTimeout);
+                this._streamingTimeout = setTimeout(() => {
+                    container.classList.remove('streaming');
+                    this.dispatchEvent(new CustomEvent('response-animation-complete', { bubbles: true, composed: true }));
+                }, 2000);
                 
                 chatContent += `
                     <div class="chat-message assistant streaming-response">
@@ -1346,6 +1376,9 @@ export class AssistantView extends LitElement {
                         <div class="message-content">${this.renderMarkdown(currentResponse)}</div>
                     </div>
                 `;
+            } else if (this.isLoading && this.chatHistory.length > 0) {
+                // Show loading state when waiting for new response
+                console.log('Waiting for new response...');
             }
             
             // Use requestAnimationFrame for smooth DOM update without flickering
@@ -1374,6 +1407,16 @@ export class AssistantView extends LitElement {
         if (url && typeof window !== 'undefined' && window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.invoke('open-external', url);
+        }
+    }
+
+    openSourceByIndex(index) {
+        if (this.sources && index >= 0 && index < this.sources.length) {
+            const source = this.sources[index];
+            console.log(`Opening source ${index + 1}:`, source.title, source.url);
+            this.openSource(source.url);
+        } else {
+            console.warn(`Invalid source index: ${index}`);
         }
     }
 
