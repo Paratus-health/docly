@@ -145,11 +145,19 @@ export class CheatingDaddyApp extends LitElement {
 
     constructor() {
         super();
-        this.currentView = localStorage.getItem('onboardingCompleted') ? 'main' : 'onboarding';
+        this.currentView = localStorage.getItem('onboardingCompleted') ? 'assistant' : 'onboarding';
         this.statusText = '';
         this.startTime = null;
         this.isRecording = false;
         this.sessionActive = false;
+        
+        // Auto-start session if going directly to assistant view
+        if (this.currentView === 'assistant') {
+            this.sessionActive = true;
+            this.startTime = Date.now();
+            // Initialize session after component is connected
+            setTimeout(() => this.autoStartSession(), 100);
+        }
         this.selectedProfile = localStorage.getItem('selectedProfile') || 'interview';
         this.selectedLanguage = localStorage.getItem('selectedLanguage') || 'en-US';
         this.selectedScreenshotInterval = localStorage.getItem('selectedScreenshotInterval') || '5';
@@ -174,6 +182,10 @@ export class CheatingDaddyApp extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
+        // Set up keyboard event listener for escape key
+        this.boundKeydownHandler = this.handleKeydown.bind(this);
+        document.addEventListener('keydown', this.boundKeydownHandler);
+
         // Set up IPC listeners if needed
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
@@ -194,12 +206,28 @@ export class CheatingDaddyApp extends LitElement {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+        
+        // Remove keyboard event listener
+        if (this.boundKeydownHandler) {
+            document.removeEventListener('keydown', this.boundKeydownHandler);
+        }
+        
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.removeAllListeners('update-response');
             ipcRenderer.removeAllListeners('update-status');
             ipcRenderer.removeAllListeners('click-through-toggled');
             ipcRenderer.removeAllListeners('update-sources');
+        }
+    }
+
+    handleKeydown(event) {
+        // Handle escape key to exit assistant view
+        if (event.key === 'Escape') {
+            if (this.currentView === 'assistant') {
+                event.preventDefault();
+                this.handleClose();
+            }
         }
     }
 
@@ -287,19 +315,20 @@ export class CheatingDaddyApp extends LitElement {
     }
 
     async handleClose() {
-        if (this.currentView === 'customize' || this.currentView === 'help' || this.currentView === 'history') {
-            this.currentView = 'main';
+        if (this.currentView === 'customize' || this.currentView === 'help' || this.currentView === 'history' || this.currentView === 'advanced') {
+            this.currentView = 'assistant'; // Go back to assistant instead of main
         } else if (this.currentView === 'assistant') {
+            // Quit the entire application when closing assistant view
             cheddar.stopCapture();
 
             // Close the session
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
                 await ipcRenderer.invoke('close-session');
+                await ipcRenderer.invoke('quit-application');
             }
             this.sessionActive = false;
-            this.currentView = 'main';
-            console.log('Session closed');
+            console.log('Session closed and app quitting');
         } else {
             // Quit the entire application
             if (window.require) {
@@ -313,6 +342,25 @@ export class CheatingDaddyApp extends LitElement {
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             await ipcRenderer.invoke('toggle-window-visibility');
+        }
+    }
+
+    // Auto-start session when app opens directly to assistant view
+    async autoStartSession() {
+        try {
+            // Hardcode the API key - skip validation
+            localStorage.setItem('apiKey', '463fc501-e19e-4e0d-98f2-2a680cb3c523');
+
+            await cheddar.initializeMediSearch(this.selectedProfile, this.selectedLanguage);
+            // Pass the screenshot interval as string (including 'manual' option)
+            cheddar.startCapture(this.selectedScreenshotInterval, this.selectedImageQuality);
+            this.responses = [];
+            this.currentResponseIndex = -1;
+            this.setStatus('Ready');
+            console.log('Session auto-started');
+        } catch (error) {
+            console.error('Failed to auto-start session:', error);
+            this.setStatus('Error starting session');
         }
     }
 
@@ -361,7 +409,7 @@ export class CheatingDaddyApp extends LitElement {
     }
 
     handleBackClick() {
-        this.currentView = 'main';
+        this.currentView = 'assistant'; // Go back to assistant instead of main
         this.requestUpdate();
     }
 

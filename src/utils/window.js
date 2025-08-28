@@ -263,53 +263,47 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
                     // Auto-start session and focus medical question input field
                     setTimeout(() => {
                         if (mainWindow && !mainWindow.isDestroyed()) {
-                            mainWindow.webContents.executeJavaScript(`
-                                try {
-                                    // Function to focus the input in assistant view
-                                    function focusAssistantInput() {
-                                        // Access the assistant-view component
-                                        const assistantView = document.querySelector('assistant-view');
-                                        if (assistantView && assistantView.shadowRoot) {
-                                            // Find the input in the shadow DOM
-                                            const input = assistantView.shadowRoot.querySelector('#textInput');
-                                            if (input) {
-                                                input.focus();
-                                                input.select();
-                                                console.log('Focused assistant input');
-                                                return true;
-                                            }
-                                        }
-                                        return false;
-                                    }
-                                    
-                                    // Check if we're in main view and need to start session
-                                    if (window.cheddar && window.cheddar.getCurrentView() === 'main') {
-                                        // Simulate clicking the start button
-                                        const startButton = document.querySelector('.start-button');
-                                        if (startButton && !startButton.classList.contains('initializing')) {
-                                            startButton.click();
+                            // Use a much simpler approach
+                            const attemptFocus = (retryCount = 0) => {
+                                if (retryCount > 15) return; // Max 15 attempts
+                                
+                                mainWindow.webContents.executeJavaScript(`
+                                    (function() {
+                                        try {
+                                            console.log('Focus attempt ' + ${retryCount + 1});
                                             
-                                            // Wait for assistant view to load, then focus input
-                                            setTimeout(() => {
-                                                focusAssistantInput();
-                                            }, 800);
-                                            return 'starting session...';
+                                            // Find and focus the medical question input
+                                            const assistantView = document.querySelector('assistant-view');
+                                            if (assistantView && assistantView.shadowRoot) {
+                                                const input = assistantView.shadowRoot.querySelector('#textInput');
+                                                if (input) {
+                                                    input.focus();
+                                                    input.select();
+                                                    console.log('✅ Medical question input focused successfully');
+                                                    return 'success';
+                                                }
+                                            }
+                                            
+                                            return 'not_ready';
+                                        } catch (error) {
+                                            console.log('Focus attempt error: ' + error.message);
+                                            return 'error';
                                         }
-                                    } else if (window.cheddar && window.cheddar.getCurrentView() === 'assistant') {
-                                        // Already in assistant view, focus immediately
-                                        focusAssistantInput();
-                                        return 'focused existing assistant input';
+                                    })();
+                                `).then(result => {
+                                    if (result !== 'success') {
+                                        // Retry after a short delay
+                                        setTimeout(() => attemptFocus(retryCount + 1), 200);
                                     }
-                                    
-                                    return 'no action taken';
-                                } catch (e) {
-                                    return 'error: ' + e.message;
-                                }
-                            `).catch(err => {
-                                console.log('Auto-start script error:', err);
-                            });
+                                }).catch(() => {
+                                    // Retry on error
+                                    setTimeout(() => attemptFocus(retryCount + 1), 300);
+                                });
+                            };
+                            
+                            attemptFocus();
                         }
-                    }, 300); // Delay to ensure DOM is ready
+                    }, 300);
                 }
             });
             console.log(`Registered toggleVisibility: ${keybinds.toggleVisibility}`);
@@ -457,53 +451,47 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 // Auto-start session and focus medical question input field
                 setTimeout(() => {
                     if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.webContents.executeJavaScript(`
-                            try {
-                                // Function to focus the input in assistant view
-                                function focusAssistantInput() {
-                                    // Access the assistant-view component
-                                    const assistantView = document.querySelector('assistant-view');
-                                    if (assistantView && assistantView.shadowRoot) {
-                                        // Find the input in the shadow DOM
-                                        const input = assistantView.shadowRoot.querySelector('#textInput');
-                                        if (input) {
-                                            input.focus();
-                                            input.select();
-                                            console.log('Focused assistant input');
-                                            return true;
-                                        }
-                                    }
-                                    return false;
-                                }
-                                
-                                // Check if we're in main view and need to start session
-                                if (window.cheddar && window.cheddar.getCurrentView() === 'main') {
-                                    // Simulate clicking the start button
-                                    const startButton = document.querySelector('.start-button');
-                                    if (startButton && !startButton.classList.contains('initializing')) {
-                                        startButton.click();
+                        // Use a much simpler approach
+                        const attemptFocus = (retryCount = 0) => {
+                            if (retryCount > 15) return; // Max 15 attempts
+                            
+                            mainWindow.webContents.executeJavaScript(`
+                                (function() {
+                                    try {
+                                        console.log('Focus attempt ' + ${retryCount + 1});
                                         
-                                        // Wait for assistant view to load, then focus input
-                                        setTimeout(() => {
-                                            focusAssistantInput();
-                                        }, 800);
-                                        return 'starting session...';
+                                        // Find and focus the medical question input
+                                        const assistantView = document.querySelector('assistant-view');
+                                        if (assistantView && assistantView.shadowRoot) {
+                                            const input = assistantView.shadowRoot.querySelector('#textInput');
+                                            if (input) {
+                                                input.focus();
+                                                input.select();
+                                                console.log('✅ Medical question input focused successfully');
+                                                return 'success';
+                                            }
+                                        }
+                                        
+                                        return 'not_ready';
+                                    } catch (error) {
+                                        console.log('Focus attempt error: ' + error.message);
+                                        return 'error';
                                     }
-                                } else if (window.cheddar && window.cheddar.getCurrentView() === 'assistant') {
-                                    // Already in assistant view, focus immediately
-                                    focusAssistantInput();
-                                    return 'focused existing assistant input';
+                                })();
+                            `).then(result => {
+                                if (result !== 'success') {
+                                    // Retry after a short delay
+                                    setTimeout(() => attemptFocus(retryCount + 1), 200);
                                 }
-                                
-                                return 'no action taken';
-                            } catch (e) {
-                                return 'error: ' + e.message;
-                            }
-                        `).catch(err => {
-                            console.log('Auto-start script error:', err);
-                        });
+                            }).catch(() => {
+                                // Retry on error
+                                setTimeout(() => attemptFocus(retryCount + 1), 300);
+                            });
+                        };
+                        
+                        attemptFocus();
                     }
-                }, 300); // Delay to ensure DOM is ready
+                }, 300);
             }
             return { success: true };
         } catch (error) {
