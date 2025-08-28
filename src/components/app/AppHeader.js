@@ -238,10 +238,7 @@ export class AppHeader extends LitElement {
                 <div class="header-title">Paratus Health</div>
                 <div class="header-actions">
                     ${this.currentView === 'assistant'
-                        ? html`
-                              <span>${elapsedTime}</span>
-                              <span>${this.statusText}</span>
-                          `
+                        ? html``
                         : ''}
                     ${this.currentView === 'main'
                         ? html`
