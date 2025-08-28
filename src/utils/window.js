@@ -193,7 +193,7 @@ function getDefaultKeybinds() {
         moveDown: isMac ? 'Alt+Down' : 'Ctrl+Down',
         moveLeft: isMac ? 'Alt+Left' : 'Ctrl+Left',
         moveRight: isMac ? 'Alt+Right' : 'Ctrl+Right',
-        toggleVisibility: isMac ? 'Cmd+\\' : 'Ctrl+\\',
+        toggleVisibility: isMac ? '`' : '`',
         toggleClickThrough: isMac ? 'Cmd+M' : 'Ctrl+M',
         nextStep: isMac ? 'Cmd+Enter' : 'Ctrl+Enter',
         previousResponse: isMac ? 'Cmd+[' : 'Ctrl+[',
@@ -260,6 +260,38 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
                     mainWindow.hide();
                 } else {
                     mainWindow.showInactive();
+                    // Auto-focus the medical question input field after showing the window
+                    setTimeout(() => {
+                        if (mainWindow && !mainWindow.isDestroyed()) {
+                            mainWindow.webContents.executeJavaScript(`
+                                try {
+                                    // Try to find the input field in assistant view
+                                    let input = document.getElementById('textInput');
+                                    if (input && input.offsetParent !== null) {
+                                        input.focus();
+                                        input.select();
+                                        return 'focused textInput';
+                                    }
+                                    
+                                    // Fallback: try to find any visible input or textarea
+                                    const inputs = document.querySelectorAll('input[type="text"], textarea');
+                                    for (const inp of inputs) {
+                                        if (inp.offsetParent !== null) {
+                                            inp.focus();
+                                            inp.select();
+                                            return 'focused fallback input';
+                                        }
+                                    }
+                                    
+                                    return 'no input found';
+                                } catch (e) {
+                                    return 'error: ' + e.message;
+                                }
+                            `).catch(err => {
+                                console.log('Focus script error:', err);
+                            });
+                        }
+                    }, 200); // Increased delay to ensure DOM is ready
                 }
             });
             console.log(`Registered toggleVisibility: ${keybinds.toggleVisibility}`);
@@ -404,6 +436,38 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 mainWindow.hide();
             } else {
                 mainWindow.showInactive();
+                // Auto-focus the medical question input field after showing the window
+                setTimeout(() => {
+                    if (mainWindow && !mainWindow.isDestroyed()) {
+                        mainWindow.webContents.executeJavaScript(`
+                            try {
+                                // Try to find the input field in assistant view
+                                let input = document.getElementById('textInput');
+                                if (input && input.offsetParent !== null) {
+                                    input.focus();
+                                    input.select();
+                                    return 'focused textInput';
+                                }
+                                
+                                // Fallback: try to find any visible input or textarea
+                                const inputs = document.querySelectorAll('input[type="text"], textarea');
+                                for (const inp of inputs) {
+                                    if (inp.offsetParent !== null) {
+                                        inp.focus();
+                                        inp.select();
+                                        return 'focused fallback input';
+                                    }
+                                }
+                                
+                                return 'no input found';
+                            } catch (e) {
+                                return 'error: ' + e.message;
+                            }
+                        `).catch(err => {
+                            console.log('Focus script error:', err);
+                        });
+                    }
+                }, 200); // Increased delay to ensure DOM is ready
             }
             return { success: true };
         } catch (error) {
