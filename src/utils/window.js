@@ -260,38 +260,56 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
                     mainWindow.hide();
                 } else {
                     mainWindow.showInactive();
-                    // Auto-focus the medical question input field after showing the window
+                    // Auto-start session and focus medical question input field
                     setTimeout(() => {
                         if (mainWindow && !mainWindow.isDestroyed()) {
                             mainWindow.webContents.executeJavaScript(`
                                 try {
-                                    // Try to find the input field in assistant view
-                                    let input = document.getElementById('textInput');
-                                    if (input && input.offsetParent !== null) {
-                                        input.focus();
-                                        input.select();
-                                        return 'focused textInput';
-                                    }
-                                    
-                                    // Fallback: try to find any visible input or textarea
-                                    const inputs = document.querySelectorAll('input[type="text"], textarea');
-                                    for (const inp of inputs) {
-                                        if (inp.offsetParent !== null) {
-                                            inp.focus();
-                                            inp.select();
-                                            return 'focused fallback input';
+                                    // Function to focus the input in assistant view
+                                    function focusAssistantInput() {
+                                        // Access the assistant-view component
+                                        const assistantView = document.querySelector('assistant-view');
+                                        if (assistantView && assistantView.shadowRoot) {
+                                            // Find the input in the shadow DOM
+                                            const input = assistantView.shadowRoot.querySelector('#textInput');
+                                            if (input) {
+                                                input.focus();
+                                                input.select();
+                                                console.log('Focused assistant input');
+                                                return true;
+                                            }
                                         }
+                                        return false;
                                     }
                                     
-                                    return 'no input found';
+                                    // Check if we're in main view and need to start session
+                                    if (window.cheddar && window.cheddar.getCurrentView() === 'main') {
+                                        // Simulate clicking the start button
+                                        const startButton = document.querySelector('.start-button');
+                                        if (startButton && !startButton.classList.contains('initializing')) {
+                                            startButton.click();
+                                            
+                                            // Wait for assistant view to load, then focus input
+                                            setTimeout(() => {
+                                                focusAssistantInput();
+                                            }, 800);
+                                            return 'starting session...';
+                                        }
+                                    } else if (window.cheddar && window.cheddar.getCurrentView() === 'assistant') {
+                                        // Already in assistant view, focus immediately
+                                        focusAssistantInput();
+                                        return 'focused existing assistant input';
+                                    }
+                                    
+                                    return 'no action taken';
                                 } catch (e) {
                                     return 'error: ' + e.message;
                                 }
                             `).catch(err => {
-                                console.log('Focus script error:', err);
+                                console.log('Auto-start script error:', err);
                             });
                         }
-                    }, 200); // Increased delay to ensure DOM is ready
+                    }, 300); // Delay to ensure DOM is ready
                 }
             });
             console.log(`Registered toggleVisibility: ${keybinds.toggleVisibility}`);
@@ -436,38 +454,56 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
                 mainWindow.hide();
             } else {
                 mainWindow.showInactive();
-                // Auto-focus the medical question input field after showing the window
+                // Auto-start session and focus medical question input field
                 setTimeout(() => {
                     if (mainWindow && !mainWindow.isDestroyed()) {
                         mainWindow.webContents.executeJavaScript(`
                             try {
-                                // Try to find the input field in assistant view
-                                let input = document.getElementById('textInput');
-                                if (input && input.offsetParent !== null) {
-                                    input.focus();
-                                    input.select();
-                                    return 'focused textInput';
-                                }
-                                
-                                // Fallback: try to find any visible input or textarea
-                                const inputs = document.querySelectorAll('input[type="text"], textarea');
-                                for (const inp of inputs) {
-                                    if (inp.offsetParent !== null) {
-                                        inp.focus();
-                                        inp.select();
-                                        return 'focused fallback input';
+                                // Function to focus the input in assistant view
+                                function focusAssistantInput() {
+                                    // Access the assistant-view component
+                                    const assistantView = document.querySelector('assistant-view');
+                                    if (assistantView && assistantView.shadowRoot) {
+                                        // Find the input in the shadow DOM
+                                        const input = assistantView.shadowRoot.querySelector('#textInput');
+                                        if (input) {
+                                            input.focus();
+                                            input.select();
+                                            console.log('Focused assistant input');
+                                            return true;
+                                        }
                                     }
+                                    return false;
                                 }
                                 
-                                return 'no input found';
+                                // Check if we're in main view and need to start session
+                                if (window.cheddar && window.cheddar.getCurrentView() === 'main') {
+                                    // Simulate clicking the start button
+                                    const startButton = document.querySelector('.start-button');
+                                    if (startButton && !startButton.classList.contains('initializing')) {
+                                        startButton.click();
+                                        
+                                        // Wait for assistant view to load, then focus input
+                                        setTimeout(() => {
+                                            focusAssistantInput();
+                                        }, 800);
+                                        return 'starting session...';
+                                    }
+                                } else if (window.cheddar && window.cheddar.getCurrentView() === 'assistant') {
+                                    // Already in assistant view, focus immediately
+                                    focusAssistantInput();
+                                    return 'focused existing assistant input';
+                                }
+                                
+                                return 'no action taken';
                             } catch (e) {
                                 return 'error: ' + e.message;
                             }
                         `).catch(err => {
-                            console.log('Focus script error:', err);
+                            console.log('Auto-start script error:', err);
                         });
                     }
-                }, 200); // Increased delay to ensure DOM is ready
+                }, 300); // Delay to ensure DOM is ready
             }
             return { success: true };
         } catch (error) {

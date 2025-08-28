@@ -14,21 +14,21 @@ export class AssistantView extends LitElement {
             flex-direction: column;
             height: 100%;
             overflow: hidden;
-            gap: 16px;
-            padding: 16px;
+            gap: 8px;
+            padding: 8px;
         }
 
         .tab-container {
             position: relative;
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            backdrop-filter: blur(24px) saturate(120%);
-            -webkit-backdrop-filter: blur(24px) saturate(120%);
+            backdrop-filter: blur(60px) saturate(200%) brightness(1.1);
+            -webkit-backdrop-filter: blur(60px) saturate(200%) brightness(1.1);
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.3),
-                0 8px 16px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 20px 40px rgba(0, 0, 0, 0.02),
+                0 1px 2px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -54,13 +54,12 @@ export class AssistantView extends LitElement {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(20px) saturate(120%);
-            -webkit-backdrop-filter: blur(20px) saturate(120%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 20px 24px;
-            gap: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 12px 16px;
+            gap: 12px;
             border-radius: 16px 16px 0 0;
             flex-shrink: 0;
         }
@@ -77,32 +76,33 @@ export class AssistantView extends LitElement {
         }
 
         .conversation-title {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            letter-spacing: -0.01em;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
         .new-chat-button {
-            padding: 10px 16px;
-            background: linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(99, 102, 241) 100%);
-            border: none;
-            color: white;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
+            padding: 6px 10px;
+            background: rgba(59, 130, 246, 0.03);
+            border: 1px solid rgba(59, 130, 246, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 400;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+            gap: 3px;
+            backdrop-filter: blur(20px);
         }
 
         .new-chat-button:hover {
-            background: linear-gradient(135deg, rgb(37, 99, 235) 0%, rgb(79, 70, 229) 100%);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
         }
 
         .new-chat-button:active {
@@ -110,33 +110,33 @@ export class AssistantView extends LitElement {
         }
 
         .tab-button {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 13px;
-            font-weight: 500;
-            border-radius: 10px;
+            padding: 6px 10px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            font-weight: 400;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             text-shadow: none;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(20px);
         }
 
         .tab-button.active {
-            background: rgba(59, 130, 246, 0.3);
-            border-color: rgba(59, 130, 246, 0.5);
-            color: white;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 12px rgba(255, 255, 255, 0.02);
         }
 
         .tab-button:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .tab-content {
@@ -179,17 +179,17 @@ export class AssistantView extends LitElement {
         }
 
         .source-item {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 14px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
             cursor: pointer;
             transition: all 0.15s ease;
             position: relative;
             overflow: hidden;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.8);
             text-shadow: none;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
 
         .source-item::before {
@@ -205,10 +205,9 @@ export class AssistantView extends LitElement {
         }
 
         .source-item:hover {
-            background: rgba(0, 0, 0, 0.8);
-            border-color: rgba(59, 130, 246, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
         }
 
         .source-item:hover::before {
@@ -345,62 +344,70 @@ export class AssistantView extends LitElement {
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 16px;
+            padding: 12px;
             border-radius: 0;
-            font-size: var(--response-font-size, 16px);
-            line-height: 1.8;
+            font-size: var(--response-font-size, 15px);
+            line-height: 1.7;
             background: transparent;
             border: none;
             scroll-behavior: smooth;
             user-select: text;
             cursor: text;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            letter-spacing: 0.01em;
-            word-spacing: 0.05em;
-            color: rgba(255, 255, 255, 0.95);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            letter-spacing: 0.005em;
+            word-spacing: 0.02em;
+            color: rgba(255, 255, 255, 0.9);
             text-shadow: none;
             min-height: 0;
             max-height: none;
+            font-weight: 400;
         }
 
         .chat-message {
-            margin-bottom: 24px;
-            padding: 24px 32px;
-            border-radius: 14px;
+            margin-bottom: 16px;
+            padding: 20px 24px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
 
         .chat-message.user {
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            margin-left: 40px;
-            margin-right: 32px;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            margin-left: 60px;
+            margin-right: 20px;
+            backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.02);
         }
 
         .chat-message.assistant {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             margin-left: 0;
             margin-right: 0;
+            backdrop-filter: blur(30px) saturate(150%);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01);
         }
 
         .message-role {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 10px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: rgba(255, 255, 255, 0.5);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
 
         .message-content {
-            color: rgba(255, 255, 255, 0.95);
-            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+            font-weight: 400;
+            letter-spacing: 0.01em;
         }
 
         .message-timestamp {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 6px;
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
         }
 
         /* Elegant scrollbar */
@@ -434,15 +441,15 @@ export class AssistantView extends LitElement {
 
         /* Loading animation for waiting responses */
         .thinking-indicator {
-            padding: 16px 24px;
-            background: rgba(248, 250, 252, 0.95);
-            border-top: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            color: rgb(71, 85, 105);
-            opacity: 0.8;
+            gap: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
         }
 
         .loading-animation {
@@ -683,37 +690,38 @@ export class AssistantView extends LitElement {
 
         .text-input-container {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: stretch;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(20px) saturate(120%);
-            -webkit-backdrop-filter: blur(20px) saturate(120%);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(50px) saturate(200%) brightness(1.05);
+            -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(1.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 6px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.02);
         }
 
         .text-input-container:focus-within {
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.05), 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.02);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.03);
         }
 
         .input-wrapper {
             flex: 1;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 4px 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
+            gap: 8px;
+            padding: 8px 12px;
+            background: transparent;
+            border-radius: 8px;
             transition: all 0.2s ease;
         }
 
         .input-wrapper:focus-within {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.01);
         }
 
         .text-input-container input {
@@ -738,26 +746,29 @@ export class AssistantView extends LitElement {
         }
 
         .send-button {
-            background: linear-gradient(135deg, rgb(59, 130, 246), rgb(99, 102, 241));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 600;
+            background: rgba(59, 130, 246, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-width: 80px;
+            gap: 4px;
+            min-width: 50px;
             justify-content: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.03);
         }
 
         .send-button:hover {
-            background: linear-gradient(135deg, rgb(37, 99, 235), rgb(79, 70, 229));
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.06);
             transform: translateY(-1px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
         }
 
         .send-button:active {
@@ -765,11 +776,11 @@ export class AssistantView extends LitElement {
         }
 
         .send-button:disabled {
-            background: rgba(148, 163, 184, 0.4);
-            color: rgba(71, 85, 105, 0.5);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
         .text-input-container button {
@@ -1284,16 +1295,14 @@ export class AssistantView extends LitElement {
                 }
             });
             
-            // Add current response if we have one and it's not already in chat history
+            // Handle current streaming response
             const currentResponse = this.getCurrentResponse();
             const lastMessage = this.chatHistory[this.chatHistory.length - 1];
-            const isCurrentResponseInHistory = lastMessage && 
-                lastMessage.role === 'assistant' && 
-                lastMessage.content === currentResponse;
-            
-            if (currentResponse && 
-                currentResponse !== 'What medical question do you have?' && 
-                !isCurrentResponseInHistory) {
+            const shouldShowCurrentResponse = currentResponse && 
+                currentResponse !== 'What medical question do you have?' &&
+                (!lastMessage || lastMessage.role !== 'assistant' || lastMessage.content !== currentResponse);
+                
+            if (shouldShowCurrentResponse) {
                 console.log('Current response:', currentResponse);
                 
                 // Show streaming indicator if response is being updated
@@ -1308,13 +1317,13 @@ export class AssistantView extends LitElement {
                 }
                 
                 chatContent += `
-                    <div class="chat-message assistant">
+                    <div class="chat-message assistant streaming-response">
                         <div class="message-role">Assistant</div>
                         <div class="message-content">${this.renderMarkdown(currentResponse)}</div>
                     </div>
                 `;
-            } else if (this.chatHistory.length === 0) {
-                // Show welcome message for new chat
+            } else if (this.chatHistory.length === 0 && currentResponse === 'What medical question do you have?') {
+                // Show welcome message for new chat only
                 chatContent = `
                     <div class="chat-message assistant">
                         <div class="message-role">Assistant</div>
@@ -1323,16 +1332,15 @@ export class AssistantView extends LitElement {
                 `;
             }
             
-            // Apply brief update indication for smooth transition
-            container.classList.add('updating');
-            
-            // Use requestAnimationFrame for smooth DOM update
+            // Use requestAnimationFrame for smooth DOM update without flickering
             requestAnimationFrame(() => {
-                container.innerHTML = chatContent;
-                container.classList.remove('updating');
+                // Only update if content actually changed to prevent flickering
+                if (container.innerHTML !== chatContent) {
+                    container.innerHTML = chatContent;
+                }
                 
                 // Auto-scroll based on content type
-                if (this.shouldAnimateResponse && currentResponse && currentResponse !== 'What medical question do you have?') {
+                if (this.shouldAnimateResponse && shouldShowCurrentResponse) {
                     // For streaming responses, scroll to show the top of the answer
                     this.scrollToNewAnswer();
                 } else {
