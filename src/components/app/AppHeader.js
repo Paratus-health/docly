@@ -24,6 +24,19 @@ export class AppHeader extends LitElement {
                 0 1px 0 0 rgba(255, 255, 255, 0.25) inset;
             position: relative;
             overflow: hidden;
+            animation: slideInLeft 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
         }
 
         .header-title {
@@ -42,6 +55,13 @@ export class AppHeader extends LitElement {
             height: 48px;
             width: auto;
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+            animation: float 4s ease-in-out infinite, blueGlow 3s ease-in-out infinite;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .header-logo:hover {
+            transform: scale(1.05) rotate(5deg);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(64, 169, 255, 0.6));
         }
 
         .header-actions {
@@ -72,6 +92,27 @@ export class AppHeader extends LitElement {
                 0 2px 8px rgba(0, 0, 0, 0.15),
                 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
             transform: translateZ(0);
+            animation: slideInRight 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        .button:active::before {
+            width: 300%;
+            height: 300%;
         }
 
         .icon-button {
@@ -85,7 +126,8 @@ export class AppHeader extends LitElement {
             font-weight: 500;
             display: flex;
             opacity: 0.9;
-            transition: opacity 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            animation: slideInRight 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         .icon-button svg {
@@ -96,6 +138,15 @@ export class AppHeader extends LitElement {
         .icon-button:hover {
             background: var(--hover-background);
             opacity: 1;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .icon-button svg {
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .icon-button:hover svg {
+            filter: drop-shadow(0 0 8px rgba(64, 169, 255, 0.6));
         }
 
         .button:hover {
@@ -391,8 +442,7 @@ export class AppHeader extends LitElement {
                     ${this.currentView === 'assistant'
                         ? html`
                               <button @click=${this.onHideToggleClick} class="button">
-                                  Hide&nbsp;&nbsp;<span class="key" style="pointer-events: none;">${cheddar.isMacOS ? 'Cmd' : 'Ctrl'}</span
-                                  >&nbsp;&nbsp;<span class="key">&bsol;</span>
+                                  Hide&nbsp;&nbsp;<span class="key" style="pointer-events: none;">~</span>
                               </button>
                               <button @click=${this.onCloseClick} class="icon-button window-close">
                                   <?xml version="1.0" encoding="UTF-8"?><svg

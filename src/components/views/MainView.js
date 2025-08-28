@@ -52,6 +52,7 @@ export class MainView extends LitElement {
             border-color: var(--focus-border-color);
             box-shadow: var(--focus-box-shadow);
             background: var(--input-focus-background);
+            animation: var(--focus-animation);
         }
 
         input::placeholder {
@@ -101,6 +102,24 @@ export class MainView extends LitElement {
                 0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             transform: translateZ(0);
+            animation: float 6s ease-in-out infinite, breathe 4s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .start-button:hover::before {
+            left: 100%;
         }
 
         .start-button:hover {

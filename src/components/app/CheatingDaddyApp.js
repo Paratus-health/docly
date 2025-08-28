@@ -58,13 +58,28 @@ export class CheatingDaddyApp extends LitElement {
             animation: scaleIn 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        .main-content.with-border {
-            border: 1px solid var(--border-color);
-        }
-
         .main-content.assistant-view {
             padding: 10px;
             border: none;
+            position: relative;
+        }
+
+        .main-content.assistant-view::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: var(--content-border-radius);
+            background: linear-gradient(45deg, transparent 30%, rgba(64, 169, 255, 0.05) 50%, transparent 70%);
+            pointer-events: none;
+            animation: blueGlow 4s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .main-content.with-border {
+            border: 1px solid var(--border-color);
         }
 
         .main-content.onboarding-view {

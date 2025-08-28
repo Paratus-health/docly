@@ -46,6 +46,7 @@ export class AssistantView extends LitElement {
             background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
             pointer-events: none;
             border-radius: 16px 16px 0 0;
+            animation: subtleGlow 3s ease-in-out infinite;
         }
 
         .tab-header {
@@ -110,33 +111,71 @@ export class AssistantView extends LitElement {
         }
 
         .tab-button {
-            padding: 6px 10px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 11px;
-            font-weight: 400;
-            border-radius: 6px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             text-shadow: none;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+            animation-fill-mode: both;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+            position: relative;
+            overflow: hidden;
         }
 
+        .tab-button:nth-child(1) { animation-delay: 0.1s; }
+        .tab-button:nth-child(2) { animation-delay: 0.2s; }
+        .tab-button:nth-child(3) { animation-delay: 0.3s; }
+
         .tab-button.active {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 2px 12px rgba(255, 255, 255, 0.02);
+            background: rgba(59, 130, 246, 0.08);
+            border-color: rgba(59, 130, 246, 0.15);
+            color: rgba(255, 255, 255, 0.95);
+            box-shadow: 
+                0 4px 16px rgba(59, 130, 246, 0.1),
+                0 0 0 1px rgba(59, 130, 246, 0.1) inset,
+                0 1px 0 0 rgba(255, 255, 255, 0.1) inset;
+            transform: translateY(-1px);
         }
 
         .tab-button:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.85);
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+        }
+
+        .tab-button:active::before {
+            width: 200%;
+            height: 200%;
         }
 
         .tab-content {
@@ -184,13 +223,22 @@ export class AssistantView extends LitElement {
             border-radius: 12px;
             padding: 16px;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             position: relative;
             overflow: hidden;
             color: rgba(255, 255, 255, 0.8);
             text-shadow: none;
             backdrop-filter: blur(12px);
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), breathe 8s ease-in-out infinite;
+            animation-fill-mode: both;
         }
+
+        .source-item:nth-child(1) { animation-delay: 0.1s; }
+        .source-item:nth-child(2) { animation-delay: 0.2s; }
+        .source-item:nth-child(3) { animation-delay: 0.3s; }
+        .source-item:nth-child(4) { animation-delay: 0.4s; }
+        .source-item:nth-child(5) { animation-delay: 0.5s; }
+        .source-item:nth-child(6) { animation-delay: 0.6s; }
 
         .source-item::before {
             content: '';
@@ -202,6 +250,7 @@ export class AssistantView extends LitElement {
             background: linear-gradient(90deg, rgb(59, 130, 246), rgb(99, 102, 241));
             transform: translateX(-100%);
             transition: transform 0.3s ease;
+            animation: subtleGlow 4s ease-in-out infinite;
         }
 
         .source-item:hover {

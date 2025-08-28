@@ -85,6 +85,65 @@ const { initializeRandomProcessNames } = require('./utils/processRandomizer');
 const { applyAntiAnalysisMeasures } = require('./utils/stealthFeatures');
 const { getLocalConfig, writeConfig } = require('./config');
 
+// Hot reload for development
+const path = require('path');
+const fs = require('fs');
+
+function setupHotReload() {
+    if (process.env.NODE_ENV === 'development' || process.defaultApp) {
+        const watchPaths = [
+            path.join(__dirname, 'components'),
+            path.join(__dirname, 'utils'),
+            path.join(__dirname, 'assets'),
+            __filename // Watch the main file too
+        ];
+
+        const debounceReload = (() => {
+            let timeout;
+            return () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    console.log('🔄 Hot reloading...');
+                    if (mainWindow && !mainWindow.isDestroyed()) {
+                        mainWindow.reload();
+                    }
+                }, 100);
+            };
+        })();
+
+        watchPaths.forEach(watchPath => {
+            try {
+                if (fs.existsSync(watchPath)) {
+                    const isDirectory = fs.statSync(watchPath).isDirectory();
+                    
+                    if (isDirectory) {
+                        // Watch directory recursively
+                        fs.watch(watchPath, { recursive: true }, (eventType, filename) => {
+                            if (filename && (filename.endsWith('.js') || filename.endsWith('.css') || filename.endsWith('.html'))) {
+                                console.log(`📁 File changed: ${filename}`);
+                                debounceReload();
+                            }
+                        });
+                    } else {
+                        // Watch single file
+                        fs.watch(watchPath, (eventType) => {
+                            if (eventType === 'change') {
+                                console.log(`📄 Main file changed`);
+                                debounceReload();
+                            }
+                        });
+                    }
+                    console.log(`👀 Watching: ${watchPath}`);
+                }
+            } catch (error) {
+                console.warn(`⚠️  Could not watch: ${watchPath}`, error.message);
+            }
+        });
+
+        console.log('🚀 Hot reload enabled for development');
+    }
+}
+
 // Safe logging that won't cause EPIPE errors
 function safeLog(message, ...args) {
     try {
@@ -202,6 +261,9 @@ app.whenReady().then(async () => {
 
         createMainWindow();
         setupGeneralIpcHandlers();
+        
+        // Setup hot reload for development
+        setupHotReload();
     } catch (error) {
         logError('app.whenReady', error);
         // Continue anyway - don't show error dialog
