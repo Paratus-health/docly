@@ -228,9 +228,15 @@ export class CheatingDaddyApp extends LitElement {
             }
         } else if (!this._currentResponseIsComplete && !isFillerResponse && this.responses.length > 0) {
             // For substantial responses, update the last one (streaming behavior)
-            // Only update if the current response is not marked as complete
-            this.responses = [...this.responses.slice(0, this.responses.length - 1), response];
-            console.log('[setResponse] Updated last response:', response);
+            // Only update if the current response is not marked as complete and content actually changed
+            const lastResponse = this.responses[this.responses.length - 1];
+            if (lastResponse !== response) { // Only update if content actually changed
+                this.responses = [...this.responses.slice(0, this.responses.length - 1), response];
+                console.log('[setResponse] Updated last response:', response);
+            } else {
+                console.log('[setResponse] No change, skipping update');
+                return; // Don't trigger re-render if nothing changed
+            }
         } else {
             // For filler responses or when current response is complete, add as new
             this.responses = [...this.responses, response];
@@ -517,15 +523,22 @@ export class CheatingDaddyApp extends LitElement {
                             // Add assistant response to chat history when animation completes
                             const assistantView = this.shadowRoot.querySelector('assistant-view');
                             const currentResponse = this.responses[this.currentResponseIndex];
-                            if (assistantView && currentResponse) {
+                            if (assistantView && currentResponse && currentResponse.trim()) {
                                 // Check if this response is already in chat history to avoid duplicates
                                 const lastMessage = assistantView.chatHistory[assistantView.chatHistory.length - 1];
-                                if (!lastMessage || lastMessage.role !== 'assistant' || lastMessage.content !== currentResponse) {
+                                const isDuplicate = lastMessage && 
+                                    lastMessage.role === 'assistant' && 
+                                    lastMessage.content.trim() === currentResponse.trim();
+                                    
+                                if (!isDuplicate) {
                                     assistantView.chatHistory = [...assistantView.chatHistory, {
                                         role: 'assistant',
                                         content: currentResponse,
                                         timestamp: new Date()
                                     }];
+                                    console.log('[response-complete] Added to chat history:', currentResponse.substring(0, 50) + '...');
+                                } else {
+                                    console.log('[response-complete] Skipping duplicate response');
                                 }
                                 
                                 // Auto-scroll to bottom after response is complete

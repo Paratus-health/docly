@@ -388,6 +388,10 @@ export class AssistantView extends LitElement {
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01);
         }
 
+        .chat-message.assistant.streaming-response {
+            transition: none; /* Prevent flickering during updates */
+        }
+
         .message-role {
             font-size: 10px;
             font-weight: 500;
@@ -1192,16 +1196,28 @@ export class AssistantView extends LitElement {
         requestAnimationFrame(() => {
             const container = this.shadowRoot.querySelector('#responseContainer');
             if (container) {
-                // Find the last assistant message (the new answer being typed)
-                const assistantMessages = container.querySelectorAll('.chat-message.assistant');
-                if (assistantMessages.length > 0) {
-                    const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
-                    // Scroll to show the top of the new answer
-                    lastAssistantMessage.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start',
-                        inline: 'nearest'
-                    });
+                // Find the streaming assistant message
+                const streamingMessage = container.querySelector('.chat-message.assistant.streaming-response');
+                if (streamingMessage) {
+                    // Get the current position of the streaming message
+                    const messageTop = streamingMessage.offsetTop;
+                    const containerScrollTop = container.scrollTop;
+                    const containerHeight = container.clientHeight;
+                    
+                    // Only scroll if the top of the message is not visible
+                    if (messageTop < containerScrollTop || messageTop > containerScrollTop + 100) {
+                        // Scroll to show the top of the streaming answer
+                        container.scrollTop = messageTop - 20; // 20px padding from top
+                        console.log('Locked to top of streaming response');
+                    }
+                } else {
+                    // Fallback: find the last assistant message
+                    const assistantMessages = container.querySelectorAll('.chat-message.assistant');
+                    if (assistantMessages.length > 0) {
+                        const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+                        const messageTop = lastAssistantMessage.offsetTop;
+                        container.scrollTop = messageTop - 20;
+                    }
                 }
             }
         });
@@ -1251,12 +1267,12 @@ export class AssistantView extends LitElement {
                     this.updateResponseContent();
                     this._updatePending = false;
                     
-                    // Auto-scroll during streaming responses - scroll to new answer instead of bottom
+                    // Auto-scroll logic - prioritize keeping streaming responses visible
                     if (changedProperties.has('responses') && this.shouldAnimateResponse) {
-                        // When a new response is being streamed, scroll to show the top of it
-                        this.scrollToNewAnswer();
+                        // When a new response is being streamed, stay locked to the top of it
+                        setTimeout(() => this.scrollToNewAnswer(), 50);
                     } else if (changedProperties.has('chatHistory')) {
-                        // For chat history updates, scroll to bottom to show user messages
+                        // For chat history updates (user messages), scroll to bottom
                         this.scrollToBottom();
                     }
                 });
@@ -1339,12 +1355,12 @@ export class AssistantView extends LitElement {
                     container.innerHTML = chatContent;
                 }
                 
-                // Auto-scroll based on content type
+                // Auto-scroll based on content type  
                 if (this.shouldAnimateResponse && shouldShowCurrentResponse) {
-                    // For streaming responses, scroll to show the top of the answer
-                    this.scrollToNewAnswer();
-                } else {
-                    // For other updates, scroll to bottom
+                    // For streaming responses, lock to the top of the new answer
+                    setTimeout(() => this.scrollToNewAnswer(), 100);
+                } else if (!this.shouldAnimateResponse) {
+                    // Only scroll to bottom when not actively streaming
                     this.scrollToBottom();
                 }
             });
