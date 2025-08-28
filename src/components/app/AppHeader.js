@@ -34,6 +34,14 @@ export class AppHeader extends LitElement {
             letter-spacing: -0.02em;
             color: rgba(255, 255, 255, 0.95);
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo {
+            height: 48px;
+            width: auto;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
         }
 
         .header-actions {
@@ -227,7 +235,7 @@ export class AppHeader extends LitElement {
 
         return html`
             <div class="header">
-                <div class="header-title">${this.getViewTitle()}</div>
+                <div class="header-title">Paratus Health</div>
                 <div class="header-actions">
                     ${this.currentView === 'assistant'
                         ? html`
