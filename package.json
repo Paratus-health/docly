@@ -28,6 +28,7 @@
     "dependencies": {
         "@google/genai": "^1.2.0",
         "electron-squirrel-startup": "^1.0.1",
+        "electron-updater": "^6.6.2",
         "node-fetch": "^2.7.0"
     },
     "devDependencies": {
@@ -41,8 +42,8 @@
         "@electron-forge/plugin-fuses": "^7.8.1",
         "@electron/fuses": "^1.8.0",
         "@reforged/maker-appimage": "^5.0.0",
-        "vitest": "^1.6.1",
+        "electron": "^30.0.5",
         "jsdom": "^23.2.0",
-        "electron": "^30.0.5"
+        "vitest": "^1.6.1"
     }
 }
