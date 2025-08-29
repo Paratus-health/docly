@@ -20,15 +20,15 @@ export class AssistantView extends LitElement {
 
         .tab-container {
             position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
-            backdrop-filter: blur(60px) saturate(200%) brightness(1.1);
-            -webkit-backdrop-filter: blur(60px) saturate(200%) brightness(1.1);
+            backdrop-filter: blur(20px) saturate(150%) brightness(0.8);
+            -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(0.8);
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.02),
-                0 1px 2px rgba(255, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 1px 2px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -55,10 +55,10 @@ export class AssistantView extends LitElement {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.01);
-            backdrop-filter: blur(40px) saturate(200%);
-            -webkit-backdrop-filter: blur(40px) saturate(200%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px) saturate(120%);
+            -webkit-backdrop-filter: blur(15px) saturate(120%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px 16px;
             gap: 12px;
             border-radius: 16px 16px 0 0;
@@ -407,21 +407,21 @@ export class AssistantView extends LitElement {
         }
 
         .chat-message.user {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             margin-left: 60px;
             margin-right: 20px;
-            backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.02);
+            backdrop-filter: blur(10px) saturate(120%);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.05);
         }
 
         .chat-message.assistant {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             margin-left: 0;
             margin-right: 0;
-            backdrop-filter: blur(30px) saturate(150%);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01);
+            backdrop-filter: blur(10px) saturate(120%);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
         }
 
         .chat-message.assistant.streaming-response {
@@ -774,10 +774,10 @@ export class AssistantView extends LitElement {
             display: flex;
             gap: 8px;
             align-items: stretch;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(50px) saturate(200%) brightness(1.05);
-            -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(1.05);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px) saturate(130%) brightness(0.9);
+            -webkit-backdrop-filter: blur(15px) saturate(130%) brightness(0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 6px;
             transition: all 0.3s ease;

@@ -46,8 +46,8 @@ function ensureDataDirectories() {
 
 function createWindow(sendToRenderer, geminiSessionRef, randomNames = null) {
     // Get layout preference (default to 'normal')
-    let windowWidth = 1250;
-    let windowHeight = 900;
+    let windowWidth = 950;
+    let windowHeight = 650;
 
     const mainWindow = new BrowserWindow({
         width: windowWidth,
@@ -605,8 +605,8 @@ function setupWindowIpcHandlers(mainWindow, sendToRenderer, geminiSessionRef) {
             let targetWidth, targetHeight;
 
             // Determine base size from layout mode
-            const baseWidth = layoutMode === 'compact' ? 800 : 1000;
-            const baseHeight = layoutMode === 'compact' ? 600 : 700;
+            const baseWidth = layoutMode === 'compact' ? 700 : 950;
+            const baseHeight = layoutMode === 'compact' ? 550 : 650;
 
             // Adjust height based on view
             switch (viewName) {
