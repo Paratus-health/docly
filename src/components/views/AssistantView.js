@@ -23,8 +23,7 @@ export class AssistantView extends LitElement {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
-            backdrop-filter: blur(20px) saturate(150%) brightness(0.8);
-            -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(0.8);
+            will-change: transform;
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.1),
                 0 1px 2px rgba(255, 255, 255, 0.2),
@@ -59,8 +58,7 @@ export class AssistantView extends LitElement {
             justify-content: space-between;
             align-items: center;
             background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(15px) saturate(120%);
-            -webkit-backdrop-filter: blur(15px) saturate(120%);
+            will-change: transform;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px 16px;
             gap: 12px;
@@ -100,7 +98,7 @@ export class AssistantView extends LitElement {
             display: flex;
             align-items: center;
             gap: 4px;
-            backdrop-filter: blur(12px);
+            will-change: transform;
             box-shadow: 
                 0 2px 6px rgba(34, 197, 94, 0.25),
                 0 1px 0 rgba(255, 255, 255, 0.15) inset;
@@ -133,8 +131,7 @@ export class AssistantView extends LitElement {
             display: flex;
             align-items: center;
             gap: 6px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            will-change: transform;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             animation: fadeInUp 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
             animation-fill-mode: both;
@@ -232,12 +229,12 @@ export class AssistantView extends LitElement {
             border-radius: 12px;
             padding: 16px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: transform 0.15s ease;
             position: relative;
             overflow: hidden;
             color: rgba(255, 255, 255, 0.95);
             text-shadow: none;
-            backdrop-filter: blur(12px);
+            will-change: transform;
             animation: fadeInUp 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), breathe 8s ease-in-out infinite;
             animation-fill-mode: both;
         }
@@ -329,7 +326,7 @@ export class AssistantView extends LitElement {
             padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: transform 0.15s ease;
             animation: fadeInUp 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
@@ -903,8 +900,7 @@ export class AssistantView extends LitElement {
                     rgba(0, 0, 0, 0.4) 70%,
                     rgba(0, 80, 120, 0.3) 100%
                 );
-            backdrop-filter: blur(20px) saturate(140%) brightness(0.95);
-            -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(0.95);
+            will-change: transform;
             border: 1px solid rgba(0, 255, 255, 0.3);
             border-radius: 12px;
             padding: 6px;
@@ -1002,7 +998,7 @@ export class AssistantView extends LitElement {
             gap: 4px;
             min-width: 60px;
             justify-content: center;
-            backdrop-filter: blur(12px);
+            will-change: transform;
             box-shadow: 
                 0 2px 8px rgba(90, 103, 216, 0.3),
                 0 1px 0 rgba(255, 255, 255, 0.2) inset;
