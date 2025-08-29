@@ -94,7 +94,7 @@ export class AssistantView extends LitElement {
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.1s ease;
             display: flex;
             align-items: center;
             gap: 4px;
@@ -127,14 +127,13 @@ export class AssistantView extends LitElement {
             font-weight: 500;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.1s ease;
             display: flex;
             align-items: center;
             gap: 6px;
             will-change: transform;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-            animation-fill-mode: both;
+            transform: translateZ(0);
             box-shadow: 
                 0 2px 8px rgba(0, 0, 0, 0.1),
                 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
@@ -142,9 +141,6 @@ export class AssistantView extends LitElement {
             overflow: hidden;
         }
 
-        .tab-button:nth-child(1) { animation-delay: 0.1s; }
-        .tab-button:nth-child(2) { animation-delay: 0.2s; }
-        .tab-button:nth-child(3) { animation-delay: 0.3s; }
 
         .tab-button.active {
             background: rgba(59, 69, 78, 0.95);
@@ -235,7 +231,7 @@ export class AssistantView extends LitElement {
             color: rgba(255, 255, 255, 0.95);
             text-shadow: none;
             will-change: transform;
-            animation: fadeInUp 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), breathe 8s ease-in-out infinite;
+            transform: translateZ(0);
             animation-fill-mode: both;
         }
 
@@ -256,7 +252,6 @@ export class AssistantView extends LitElement {
             background: linear-gradient(90deg, rgb(59, 130, 246), rgb(99, 102, 241));
             transform: translateX(-100%);
             transition: transform 0.3s ease;
-            animation: subtleGlow 4s ease-in-out infinite;
         }
 
         .source-item:hover {
@@ -327,7 +322,7 @@ export class AssistantView extends LitElement {
             margin-bottom: 12px;
             cursor: pointer;
             transition: transform 0.15s ease;
-            animation: fadeInUp 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transform: translateZ(0);
         }
 
         .history-item:hover {
@@ -383,17 +378,12 @@ export class AssistantView extends LitElement {
             border-radius: 0;
             font-size: var(--response-font-size, 15px);
             line-height: 1.7;
-            background: 
-                linear-gradient(135deg, 
-                    rgba(0, 122, 255, 0.03) 0%,
-                    rgba(0, 255, 255, 0.02) 25%,
-                    rgba(0, 200, 150, 0.03) 50%,
-                    rgba(59, 130, 246, 0.02) 75%,
-                    rgba(0, 150, 255, 0.03) 100%
-                );
+            background: transparent;
             border: none;
-            scroll-behavior: smooth;
+            scroll-behavior: auto;
             position: relative;
+            contain: layout style;
+            will-change: scroll-position;
             user-select: text;
             cursor: text;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
@@ -406,19 +396,20 @@ export class AssistantView extends LitElement {
             font-weight: 400;
         }
 
-        /* Remove background animations for professional look */
-
-        /* Ensure content appears above background elements */
+        /* Optimized for performance */
+        .response-container {
+            contain: layout style paint;
+        }
+        
         .response-container > * {
-            position: relative;
-            z-index: 1;
+            transform: translateZ(0);
         }
 
         .chat-message {
             margin-bottom: 16px;
             padding: 20px 24px;
             border-radius: 12px;
-            transition: all 0.2s ease;
+            transition: transform 0.1s ease;
             position: relative;
             group: message;
         }
@@ -515,7 +506,7 @@ export class AssistantView extends LitElement {
             cursor: pointer;
             opacity: 0;
             transform: translateX(8px);
-            transition: all 0.2s ease;
+            transition: transform 0.1s ease;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: flex;
@@ -607,7 +598,6 @@ export class AssistantView extends LitElement {
                 rgba(0, 255, 255, 0.05), 
                 transparent
             );
-            animation: professionalShimmer 4s ease-in-out infinite;
         }
 
         .loading-animation {
@@ -904,7 +894,7 @@ export class AssistantView extends LitElement {
             border: 1px solid rgba(0, 255, 255, 0.3);
             border-radius: 12px;
             padding: 6px;
-            transition: all 0.3s ease;
+            transition: transform 0.1s ease;
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
@@ -926,7 +916,6 @@ export class AssistantView extends LitElement {
                 rgba(0, 255, 255, 0.03), 
                 transparent
             );
-            animation: professionalShimmer 8s ease-in-out infinite;
             pointer-events: none;
         }
 
@@ -944,7 +933,6 @@ export class AssistantView extends LitElement {
                 0 0 20px rgba(0, 200, 150, 0.15),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15),
                 inset 0 -1px 0 rgba(0, 255, 255, 0.2);
-            animation: gentleGlow 3s ease-in-out infinite;
         }
 
         .input-wrapper {
@@ -955,7 +943,7 @@ export class AssistantView extends LitElement {
             padding: 8px 12px;
             background: transparent;
             border-radius: 8px;
-            transition: all 0.2s ease;
+            transition: transform 0.1s ease;
         }
 
         .input-wrapper:focus-within {
@@ -992,7 +980,7 @@ export class AssistantView extends LitElement {
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.1s ease;
             display: flex;
             align-items: center;
             gap: 4px;
