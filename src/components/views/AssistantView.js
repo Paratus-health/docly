@@ -300,87 +300,67 @@ export class AssistantView extends LitElement {
             line-height: 1.3;
         }
 
-        .system-prompt-content {
+
+        .history-content {
             display: none;
         }
 
-        .system-prompt-content.active {
-            display: block;
+        .history-content.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            padding: 16px;
         }
 
-        .prompt-editor {
+        .history-item {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .prompt-editor h3 {
-            color: var(--text-color);
-            font-size: 16px;
             margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .prompt-textarea {
-            width: 100%;
-            min-height: 200px;
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 12px;
-            color: var(--text-color);
-            padding: 16px;
-            font-size: 14px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            line-height: 1.5;
-            resize: vertical;
-            text-shadow: none;
-        }
-
-        .prompt-textarea:focus {
-            outline: none;
-            border-color: rgba(0, 0, 0, 0.16);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.02);
-            background: rgba(0, 0, 0, 0.04);
-        }
-
-        .prompt-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .prompt-button {
-            background: rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: rgb(51, 51, 51);
-            border-radius: 10px;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.15s ease;
-            text-shadow: none;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            animation: fadeInUp 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        .prompt-button:hover {
-            background: rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 0, 0, 0.14);
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
-        .prompt-button.secondary {
-            background: rgba(0, 0, 0, 0.03);
-            border-color: rgba(0, 0, 0, 0.06);
-            color: rgba(51, 51, 51, 0.7);
+        .history-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 8px;
         }
 
-        .prompt-button.secondary:hover {
-            background: rgba(0, 0, 0, 0.06);
-            border-color: rgba(0, 0, 0, 0.1);
-            color: rgb(51, 51, 51);
+        .history-preview {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-meta {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            padding: 40px 20px;
         }
 
 
@@ -417,6 +397,13 @@ export class AssistantView extends LitElement {
             padding: 20px 24px;
             border-radius: 12px;
             transition: all 0.2s ease;
+            position: relative;
+            group: message;
+        }
+
+        .chat-message:hover .copy-button {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .chat-message.user {
@@ -461,6 +448,48 @@ export class AssistantView extends LitElement {
             font-size: 9px;
             color: rgba(255, 255, 255, 0.3);
             margin-top: 4px;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 6px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateX(8px);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+
+        .copy-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(0) scale(1.05);
+        }
+
+        .copy-button svg {
+            width: 14px;
+            height: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .copy-button.copied {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        .copy-button.copied svg {
+            color: rgb(34, 197, 94);
         }
 
         /* Elegant scrollbar */
@@ -936,7 +965,44 @@ export class AssistantView extends LitElement {
         this._updatePending = false;
         this.sources = [];
         this.activeTab = 'response';
-        this.systemPrompt = localStorage.getItem('systemPrompt') || 'You are a helpful medical AI assistant. Provide accurate, evidence-based medical information while always recommending consulting healthcare professionals for personal medical advice.';
+        this.systemPrompt = `When generating answers, adhere to the following principles to produce expert-level, trustworthy, and highly relevant responses:
+
+1. Lead with the core answer.
+• Identify the user's central question and address it directly in the opening sentence or paragraph.
+• Focus on the primary mechanism, cause, or explanation most supported by high-quality evidence.
+• Do not preface with phrases like "based on resources" or "according to studies"; integrate evidence seamlessly into the narrative.
+
+2. Prioritize clarity, conciseness, and professional structure.
+• Write as if addressing a knowledgeable, professional audience (medical, legal, technical, etc.).
+• Use precise terminology and definitions appropriate to the domain.
+• Organize the response logically, with clear hierarchies (e.g., primary vs. secondary points), so the reader can quickly grasp the key takeaways.
+
+3. Contextualize intelligently.
+• Add relevant context that improves understanding without clutter: comparisons to familiar concepts, distinctions between preclinical and clinical evidence, regulatory or practical implications if applicable.
+• Clearly signal the strength or limitations of the evidence without hedging unnecessarily or overstating certainty.
+
+4. Prioritize by relevance and evidentiary strength.
+• Emphasize the best-supported explanations first; summarize secondary or emerging findings only if they materially enhance comprehension.
+• Avoid giving equal weight to speculative, low-evidence, or tangential mechanisms unless explicitly asked.
+
+5. Synthesize; do not data-dump.
+• Extract and integrate insights rather than listing every known pathway, effect, or study detail.
+• Translate complexity into an efficient, accurate, and digestible summary.
+• Highlight what is most actionable or informative for the likely user intent.
+
+6. Maintain a professional, neutral, and evidence-based tone.
+• Be objective and avoid hype, sensationalism, or advocacy unless specifically requested.
+• Be transparent about uncertainties or gaps in evidence. Phrases like "evidence is limited" or "primarily observed in animal models" are encouraged where applicable.
+• Do not speculate beyond the evidence unless explicitly framed as hypothesis or opinion.
+
+7. Format for readability and rapid comprehension.
+• Use headings, bullet points, or brief sections when multiple related mechanisms or concepts must be explained.
+• Keep paragraphs focused and avoid unnecessary repetition.
+• Present quantitative or technical details only when they enhance clarity.
+- ALWAYS get to the point at the beginning - no need to repeat the question. Use easy to read tactics.
+
+Ultimate Goal:
+Produce responses that are clear, accurate, and decision-ready—the kind of explanation an expert reference tool, experienced practitioner, or technical reviewer would provide. Every output should empower the user to act or understand with confidence, free from unnecessary speculation or information overload.`;
         this.conversationId = Date.now().toString();
         this.conversationTitle = 'New Chat';
         this.isLoading = false;
@@ -1028,6 +1094,15 @@ export class AssistantView extends LitElement {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    escapeForAttribute(text) {
+        return text
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'")
+            .replace(/"/g, '\\"')
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r');
     }
 
     formatTimestamp(timestamp) {
@@ -1190,26 +1265,6 @@ export class AssistantView extends LitElement {
         this.requestUpdate();
     }
 
-    saveSystemPrompt() {
-        const textarea = this.shadowRoot.querySelector('.prompt-textarea');
-        if (textarea) {
-            this.systemPrompt = textarea.value;
-            localStorage.setItem('systemPrompt', this.systemPrompt);
-            // You could add logic here to update the actual system prompt in the backend
-            console.log('System prompt saved:', this.systemPrompt);
-        }
-    }
-
-    resetSystemPrompt() {
-        const defaultPrompt = 'You are a helpful medical AI assistant. Provide accurate, evidence-based medical information while always recommending consulting healthcare professionals for personal medical advice.';
-        this.systemPrompt = defaultPrompt;
-        localStorage.setItem('systemPrompt', this.systemPrompt);
-        const textarea = this.shadowRoot.querySelector('.prompt-textarea');
-        if (textarea) {
-            textarea.value = this.systemPrompt;
-        }
-        this.requestUpdate();
-    }
 
     newChat() {
         // Save current chat to history if it has content
@@ -1377,6 +1432,12 @@ export class AssistantView extends LitElement {
                 } else if (message.role === 'assistant') {
                     chatContent += `
                         <div class="chat-message assistant">
+                            <button class="copy-button" onclick="this.getRootNode().host.copyToClipboard('${this.escapeForAttribute(message.content)}', this)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z"/>
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2"/>
+                                </svg>
+                            </button>
                             <div class="message-role">Assistant</div>
                             <div class="message-content">${this.renderMarkdown(message.content)}</div>
                             <div class="message-timestamp">${this.formatTimestamp(message.timestamp)}</div>
@@ -1413,6 +1474,12 @@ export class AssistantView extends LitElement {
                 
                 chatContent += `
                     <div class="chat-message assistant streaming-response">
+                        <button class="copy-button" onclick="this.getRootNode().host.copyToClipboard('${this.escapeForAttribute(currentResponse)}', this)">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2"/>
+                            </svg>
+                        </button>
                         <div class="message-role">Assistant</div>
                         <div class="message-content">${this.renderMarkdown(currentResponse)}</div>
                     </div>
@@ -1469,6 +1536,97 @@ export class AssistantView extends LitElement {
         }
     }
 
+    async copyToClipboard(text, buttonElement) {
+        try {
+            await navigator.clipboard.writeText(text);
+            
+            // Visual feedback
+            buttonElement.classList.add('copied');
+            const svg = buttonElement.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = `
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                `;
+            }
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+                buttonElement.classList.remove('copied');
+                if (svg) {
+                    svg.innerHTML = `
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z"/>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2"/>
+                    `;
+                }
+            }, 2000);
+            
+            console.log('Text copied to clipboard');
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+        }
+    }
+
+    renderHistory() {
+        try {
+            const savedChats = JSON.parse(localStorage.getItem('savedChats') || '[]');
+            
+            if (savedChats.length === 0) {
+                return html`
+                    <div class="history-empty">
+                        No past conversations yet.<br>
+                        Start chatting to see your history here!
+                    </div>
+                `;
+            }
+            
+            return savedChats.map(chat => {
+                const preview = this.getHistoryPreview(chat);
+                const messageCount = (chat.chatHistory?.length || 0) + (chat.responses?.length || 0);
+                
+                return html`
+                    <div class="history-item" @click=${() => this.loadChat(chat)}>
+                        <div class="history-title">${chat.title}</div>
+                        <div class="history-preview">${preview}</div>
+                        <div class="history-meta">
+                            <span>${this.formatTimestamp(chat.timestamp)}</span>
+                            <span>${messageCount} messages</span>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (e) {
+            return html`<div class="history-empty">Error loading chat history</div>`;
+        }
+    }
+
+    getHistoryPreview(chat) {
+        // Get first user message as preview
+        if (chat.chatHistory && chat.chatHistory.length > 0) {
+            const firstUserMessage = chat.chatHistory.find(msg => msg.role === 'user');
+            if (firstUserMessage) {
+                return firstUserMessage.content.substring(0, 100) + (firstUserMessage.content.length > 100 ? '...' : '');
+            }
+        }
+        return 'Empty conversation';
+    }
+
+    loadChat(chat) {
+        // Load the selected chat
+        this.conversationId = chat.id;
+        this.conversationTitle = chat.title;
+        this.chatHistory = [...(chat.chatHistory || [])];
+        this.responses = [...(chat.responses || [])];
+        this.sources = [...(chat.sources || [])];
+        
+        // Switch back to response tab
+        this.activeTab = 'response';
+        
+        // Reset current response index
+        this.currentResponseIndex = this.responses.length > 0 ? this.responses.length - 1 : -1;
+        
+        this.requestUpdate();
+    }
+
     render() {
         const currentResponse = this.getCurrentResponse();
         const responseCounter = this.getResponseCounter();
@@ -1492,10 +1650,10 @@ export class AssistantView extends LitElement {
                                 📚 Sources ${this.sources?.length ? `(${this.sources.length})` : ''}
                             </button>
                             <button 
-                                class="tab-button ${this.activeTab === 'system-prompt' ? 'active' : ''}"
-                                @click=${() => this.switchTab('system-prompt')}
+                                class="tab-button ${this.activeTab === 'history' ? 'active' : ''}"
+                                @click=${() => this.switchTab('history')}
                             >
-                                ⚙️ System Prompt
+                                📜 History
                             </button>
                         </div>
                         <div class="chat-controls">
@@ -1546,19 +1704,8 @@ export class AssistantView extends LitElement {
                             }
                         </div>
                         
-                        <div class="system-prompt-content ${this.activeTab === 'system-prompt' ? 'active' : ''}">
-                            <div class="prompt-editor">
-                                <h3>System Prompt</h3>
-                                <textarea 
-                                    class="prompt-textarea" 
-                                    .value=${this.systemPrompt}
-                                    placeholder="Enter your system prompt here..."
-                                ></textarea>
-                                <div class="prompt-actions">
-                                    <button class="prompt-button" @click=${this.saveSystemPrompt}>Save Changes</button>
-                                    <button class="prompt-button secondary" @click=${this.resetSystemPrompt}>Reset to Default</button>
-                                </div>
-                            </div>
+                        <div class="history-content ${this.activeTab === 'history' ? 'active' : ''}">
+                            ${this.renderHistory()}
                         </div>
                     </div>
                 </div>

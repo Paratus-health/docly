@@ -318,17 +318,12 @@ export class CheatingDaddyApp extends LitElement {
         if (this.currentView === 'customize' || this.currentView === 'help' || this.currentView === 'history' || this.currentView === 'advanced') {
             this.currentView = 'assistant'; // Go back to assistant instead of main
         } else if (this.currentView === 'assistant') {
-            // Quit the entire application when closing assistant view
-            cheddar.stopCapture();
-
-            // Close the session
+            // Just hide the window instead of closing the session
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
-                await ipcRenderer.invoke('close-session');
-                await ipcRenderer.invoke('quit-application');
+                await ipcRenderer.invoke('toggle-window-visibility');
             }
-            this.sessionActive = false;
-            console.log('Session closed and app quitting');
+            console.log('Assistant view hidden');
         } else {
             // Quit the entire application
             if (window.require) {
