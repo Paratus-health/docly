@@ -218,7 +218,7 @@ export class AssistantView extends LitElement {
         }
 
         .source-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 16px;
@@ -226,7 +226,7 @@ export class AssistantView extends LitElement {
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.95);
             text-shadow: none;
             backdrop-filter: blur(12px);
             animation: fadeInUp 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), breathe 8s ease-in-out infinite;
@@ -254,7 +254,7 @@ export class AssistantView extends LitElement {
         }
 
         .source-item:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.18);
             border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
         }
@@ -264,16 +264,16 @@ export class AssistantView extends LitElement {
         }
 
         .source-title {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
+            color: rgba(255, 255, 255, 1);
             line-height: 1.4;
             margin-bottom: 8px;
         }
 
         .source-meta {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -295,8 +295,8 @@ export class AssistantView extends LitElement {
         }
 
         .source-authors {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
             line-height: 1.3;
         }
 
@@ -314,7 +314,7 @@ export class AssistantView extends LitElement {
         }
 
         .history-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 16px;
@@ -325,21 +325,21 @@ export class AssistantView extends LitElement {
         }
 
         .history-item:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.18);
             border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
         }
 
         .history-title {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
+            color: rgba(255, 255, 255, 1);
             margin-bottom: 8px;
         }
 
         .history-preview {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
             line-height: 1.4;
             margin-bottom: 8px;
             display: -webkit-box;
@@ -407,7 +407,7 @@ export class AssistantView extends LitElement {
         }
 
         .chat-message.user {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.85);
             border: 1px solid rgba(59, 130, 246, 0.2);
             margin-left: 60px;
             margin-right: 20px;
@@ -416,7 +416,7 @@ export class AssistantView extends LitElement {
         }
 
         .chat-message.assistant {
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-left: 0;
             margin-right: 0;
