@@ -605,10 +605,8 @@ export class CheatingDaddyApp extends LitElement {
                                     console.log('[response-complete] Skipping duplicate response');
                                 }
                                 
-                                // Auto-scroll to bottom after response is complete
-                                setTimeout(() => {
-                                    assistantView.scrollToBottom();
-                                }, 100);
+                                // Keep position at top of the completed response
+                                // (no auto-scroll needed)
                             }
                             
                             this.requestUpdate();
