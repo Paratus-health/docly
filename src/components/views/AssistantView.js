@@ -881,27 +881,21 @@ export class AssistantView extends LitElement {
 
         .text-input-container {
             display: flex;
-            gap: 8px;
-            align-items: stretch;
-            background: 
-                linear-gradient(135deg, 
-                    rgba(0, 0, 0, 0.4) 0%,
-                    rgba(0, 50, 100, 0.3) 30%,
-                    rgba(0, 0, 0, 0.4) 70%,
-                    rgba(0, 80, 120, 0.3) 100%
-                );
-            will-change: transform;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 12px;
-            padding: 6px;
-            transition: transform 0.1s ease;
+            gap: 12px;
+            align-items: center;
+            background: rgba(17, 24, 39, 0.8);
+            border: 2px solid rgba(75, 85, 99, 0.3);
+            border-radius: 16px;
+            padding: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(12px);
             box-shadow: 
-                0 4px 25px rgba(0, 150, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                inset 0 -1px 0 rgba(0, 255, 255, 0.1);
+                0 4px 20px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            height: 64px;
         }
 
         .text-input-container::before {
@@ -912,27 +906,25 @@ export class AssistantView extends LitElement {
             right: 0;
             bottom: 0;
             background: linear-gradient(135deg, 
-                transparent, 
-                rgba(0, 255, 255, 0.03), 
-                transparent
+                rgba(99, 102, 241, 0.05), 
+                rgba(139, 92, 246, 0.05)
             );
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .text-input-container:focus-within {
-            border-color: rgba(0, 255, 255, 0.5);
-            background: 
-                linear-gradient(135deg, 
-                    rgba(0, 0, 0, 0.5) 0%,
-                    rgba(0, 100, 150, 0.4) 30%,
-                    rgba(0, 0, 0, 0.5) 70%,
-                    rgba(0, 120, 180, 0.4) 100%
-                );
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(17, 24, 39, 0.9);
             box-shadow: 
-                0 4px 30px rgba(0, 255, 255, 0.2),
-                0 0 20px rgba(0, 200, 150, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                inset 0 -1px 0 rgba(0, 255, 255, 0.2);
+                0 8px 30px rgba(99, 102, 241, 0.15),
+                0 0 0 4px rgba(99, 102, 241, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .text-input-container:focus-within::before {
+            opacity: 1;
         }
 
         .input-wrapper {
@@ -940,78 +932,83 @@ export class AssistantView extends LitElement {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 12px;
+            padding: 0 16px;
             background: transparent;
-            border-radius: 8px;
-            transition: transform 0.1s ease;
+            border-radius: 12px;
+            transition: background-color 0.2s ease;
+            position: relative;
+            height: 100%;
         }
 
         .input-wrapper:focus-within {
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .text-input-container input {
             flex: 1;
             background: transparent;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             border: none;
-            padding: 12px 0;
+            padding: 0;
             font-size: 15px;
             font-weight: 400;
             line-height: 1.4;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            transition: color 0.2s ease;
+            height: 100%;
         }
 
         .text-input-container input:focus {
             outline: none;
+            color: white;
         }
 
         .text-input-container input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(156, 163, 175, 0.8);
             font-weight: 400;
+            transition: color 0.2s ease;
+        }
+
+        .text-input-container:focus-within input::placeholder {
+            color: rgba(156, 163, 175, 0.6);
         }
 
         .send-button {
-            background: linear-gradient(135deg, rgba(90, 103, 216, 0.95) 0%, rgba(99, 102, 241, 0.9) 100%);
-            color: rgba(255, 255, 255, 1);
-            border: 1px solid rgba(90, 103, 216, 0.8);
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-size: 12px;
-            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 0 28px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: transform 0.1s ease;
+            transition: all 0.15s ease;
+            height: 44px;
             display: flex;
             align-items: center;
-            gap: 4px;
-            min-width: 60px;
             justify-content: center;
-            will-change: transform;
-            box-shadow: 
-                0 2px 8px rgba(90, 103, 216, 0.3),
-                0 1px 0 rgba(255, 255, 255, 0.2) inset;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.02em;
+            min-width: 90px;
+            backdrop-filter: blur(8px);
+            flex-shrink: 0;
         }
 
         .send-button:hover {
-            background: linear-gradient(135deg, rgba(90, 103, 216, 1) 0%, rgba(99, 102, 241, 0.95) 100%);
-            border-color: rgba(90, 103, 216, 1);
-            box-shadow: 
-                0 3px 12px rgba(90, 103, 216, 0.4),
-                0 1px 0 rgba(255, 255, 255, 0.3) inset;
-            transform: translateY(-1px) scale(1.02);
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.95);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .send-button:active {
-            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(0.98);
         }
 
         .send-button:disabled {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             color: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
             cursor: not-allowed;
-            transform: none;
         }
 
         .text-input-container button {
@@ -1863,7 +1860,7 @@ Produce responses that are clear, accurate, and decision-ready—the kind of exp
 
             <div class="text-input-container">
                 <div class="input-wrapper">
-                    <input type="text" id="textInput" placeholder="Ask a medical question..." @keydown=${this.handleTextKeydown} />
+                    <input type="text" id="textInput" placeholder="What medical question can I help you with today?" @keydown=${this.handleTextKeydown} />
                 </div>
                 
                 <button class="send-button" @click=${this.sendTextMessage}>
