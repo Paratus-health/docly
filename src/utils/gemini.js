@@ -607,30 +607,13 @@ function setupGeminiIpcHandlers(geminiSessionRef) {
     });
 
     ipcMain.handle('start-macos-audio', async event => {
-        if (process.platform !== 'darwin') {
-            return {
-                success: false,
-                error: 'macOS audio capture only available on macOS',
-            };
-        }
-
-        try {
-            const success = await startMacOSAudioCapture(geminiSessionRef);
-            return { success };
-        } catch (error) {
-            console.error('Error starting macOS audio capture:', error);
-            return { success: false, error: error.message };
-        }
+        console.log('macOS audio capture disabled - no permissions required');
+        return { success: true };
     });
 
     ipcMain.handle('stop-macos-audio', async event => {
-        try {
-            stopMacOSAudioCapture();
-            return { success: true };
-        } catch (error) {
-            console.error('Error stopping macOS audio capture:', error);
-            return { success: false, error: error.message };
-        }
+        console.log('macOS audio capture already disabled');
+        return { success: true };
     });
 
     ipcMain.handle('close-session', async event => {
